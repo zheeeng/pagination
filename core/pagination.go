@@ -33,36 +33,49 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 	}
 }
 
-func parseQueries(u *url.URL) (q, f, l, p, n url.Values) {
-	q = u.Query()
-	f = u.Query()
-	l = u.Query()
-	p = u.Query()
-	n = u.Query()
-	q.Del("page")
-	q.Del("page_size")
-	f.Del("page")
-	f.Del("page_size")
-	l.Del("page")
-	l.Del("page_size")
-	p.Del("page")
-	p.Del("page_size")
-	n.Del("page")
-	n.Del("page_size")
+type v = url.Values
+
+func parseQueries(u *url.URL) (getQueries func() (v, v, v, v, v), cleanPaginationInQueries func()) {
+	q := u.Query()
+	f := u.Query()
+	l := u.Query()
+	p := u.Query()
+	n := u.Query()
+
+	getQueries = func() (v, v, v, v, v) {
+		return q, f, l, p, n
+	}
+
+	cleanPaginationInQueries = func() {
+		q.Del("page")
+		q.Del("page_size")
+		f.Del("page")
+		f.Del("page_size")
+		l.Del("page")
+		l.Del("page_size")
+		p.Del("page")
+		p.Del("page_size")
+		n.Del("page")
+		n.Del("page_size")
+	}
+
 	return
 }
 
 func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Result {
 	parsedUrl, err := url.Parse(link)
 	basePath := ""
-	var query, firstQuery, lastQuery, previousQuery, nextQuery url.Values
+	var getQueries func() (v, v, v, v, v)
+	var cleanPaginationInQueries func()
 	if err == nil {
 		if parsedUrl.Scheme != "" {
 			basePath = parsedUrl.Scheme + "://"
 		}
 		basePath = basePath + parsedUrl.Host + parsedUrl.Path
-		query, firstQuery, lastQuery, previousQuery, nextQuery = parseQueries(parsedUrl)
+		getQueries, cleanPaginationInQueries = parseQueries(parsedUrl)
 	}
+
+	query, firstQuery, lastQuery, previousQuery, nextQuery := getQueries()
 
 	page := 0
 	queryPage := query.Get("page")
@@ -74,13 +87,15 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 	}
 
 	pageSize := 0
-	queryPageSize := query.Get("pageSize")
+	queryPageSize := query.Get("page_size")
 	if queryPageSize != "" {
 		pageSize, err = strconv.Atoi(queryPageSize)
 		if err != nil {
-			pageSize = 0
+			pageSize = p.defaultPaginatorConfiguration.pageSize
 		}
 	}
+
+	cleanPaginationInQueries()
 
 	pgt := paginatorImpl{
 		Query:           query,
@@ -95,6 +110,9 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 
 	return func(result interface{}) Result {
 		h(&pgt)
+
+		pgt.Query.Set("page", strconv.Itoa(pgt.page))
+		pgt.Query.Set("page_size", strconv.Itoa(pgt.pageSize))
 
 		first := ""
 		pgt.FirstQuery.Set("page", strconv.Itoa(pgt.firstPage))
