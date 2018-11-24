@@ -6,6 +6,7 @@ import (
 
 type (
 	PaginationSchema       = core.PaginationSchema
+	Pagination             = core.Pagination
 	Paginator              = core.Paginator
 	PaginatorConfiguration = core.PaginatorConfiguration
 )
