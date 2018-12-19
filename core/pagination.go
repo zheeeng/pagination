@@ -12,7 +12,7 @@ type Pagination interface {
 }
 
 type PaginatorConfiguration struct {
-	pageSize int
+	PageSize int
 }
 
 type pagination struct {
@@ -22,7 +22,7 @@ type pagination struct {
 func DefaultPagination() Pagination {
 	return &pagination{
 		defaultPaginatorConfiguration: PaginatorConfiguration{
-			pageSize: 30,
+			PageSize: 30,
 		},
 	}
 }
@@ -91,7 +91,7 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 	if queryPageSize != "" {
 		pageSize, err = strconv.Atoi(queryPageSize)
 		if err != nil {
-			pageSize = p.defaultPaginatorConfiguration.pageSize
+			pageSize = p.defaultPaginatorConfiguration.PageSize
 		}
 	}
 
@@ -103,7 +103,7 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 		LastQuery:       lastQuery,
 		PreviousQuery:   previousQuery,
 		NextQuery:       nextQuery,
-		defaultPageSize: p.defaultPaginatorConfiguration.pageSize,
+		defaultPageSize: p.defaultPaginatorConfiguration.PageSize,
 	}
 
 	pgt.SetIndicator(page, pageSize, 0)
