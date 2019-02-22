@@ -1,3 +1,60 @@
+/*
+Package pagination wraps the response items with pagination infomation.
+
+Example output in JSON format:
+
+    {
+        "pagination": {
+            "page": 2,
+            "pageSize": 5,
+            "total": 20,
+            "first": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
+            "last": "api.example.com/books?author=jk\u0026page=4\u0026pageSize=5",
+            "prev": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
+            "next": "api.example.com/books?author=jk\u0026page=3\u0026pageSize=5",
+            "query": {
+                "author": [
+                    "jk"
+                ],
+                "page": [
+                    "2"
+                ],
+                "pageSize": [
+                    "5"
+                ]
+            }
+        },
+        "result": [
+            {
+                "id": 5,
+                "author": "jk",
+                "name": "book"
+            },
+            {
+                "id": 6,
+                "author": "jk",
+                "name": "book"
+            },
+            {
+                "id": 7,
+                "author": "jk",
+                "name": "book"
+            },
+            {
+                "id": 8,
+                "author": "jk",
+                "name": "book"
+            },
+            {
+                "id": 9,
+                "author": "jk",
+                "name": "book"
+            }
+        ]
+    }
+
+Get details: https://github.com/zheeeng/pagination
+*/
 package pagination
 
 import (
