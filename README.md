@@ -1,2 +1,2 @@
 # pagination
-A pagination wrapper for RESTful response body.
+A pagination wrapper for wrapping response body.
