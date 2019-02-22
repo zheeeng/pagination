@@ -1,9 +1,9 @@
-package core
+package pagination
 
 import "net/url"
 
-// PaginationSchema defines the struct of pagination field
-type PaginationSchema struct {
+// PageFields defines the struct of pagination field
+type PageFields struct {
 	Page     int        `json:"page"`
 	PageSize int        `json:"page_size"`
 	Total    int        `json:"total"`
@@ -16,6 +16,6 @@ type PaginationSchema struct {
 
 // Paginated defines the paginated response struct
 type Paginated struct {
-	Pagination PaginationSchema `json:"pagination"`
-	Result     interface{}      `json:"result"`
+	Pagination PageFields  `json:"pagination"`
+	Result     interface{} `json:"result"`
 }
