@@ -5,11 +5,11 @@ import "net/url"
 // PageFields defines the struct of pagination field
 type PageFields struct {
 	Page     int        `json:"page"`
-	PageSize int        `json:"page_size"`
+	PageSize int        `json:"pageSize"`
 	Total    int        `json:"total"`
 	First    string     `json:"first"`
 	Last     string     `json:"last"`
-	Previous string     `json:"previous"`
+	Prev     string     `json:"prev"`
 	Next     string     `json:"next"`
 	Query    url.Values `json:"query"`
 }

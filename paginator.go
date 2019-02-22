@@ -19,7 +19,7 @@ type paginatorImpl struct {
 	Query           url.Values
 	FirstQuery      url.Values
 	LastQuery       url.Values
-	PreviousQuery   url.Values
+	PrevQuery       url.Values
 	NextQuery       url.Values
 	defaultPageSize int
 	page            int
@@ -27,7 +27,7 @@ type paginatorImpl struct {
 	total           int
 	firstPage       int
 	lastPage        int
-	previousPage    int
+	prevPage        int
 	nextPage        int
 }
 
@@ -85,9 +85,9 @@ func (p *paginatorImpl) SetIndicator(page, pageSize, total int) error {
 		p.firstPage = 1
 		p.lastPage = 0
 		p.total = 0
-		p.previousPage = page - 1
-		if p.previousPage < 1 {
-			p.previousPage = 1
+		p.prevPage = page - 1
+		if p.prevPage < 1 {
+			p.prevPage = 1
 		}
 		p.nextPage = page + 1
 		return nil
@@ -101,9 +101,9 @@ func (p *paginatorImpl) SetIndicator(page, pageSize, total int) error {
 	if p.page > p.lastPage {
 		p.page = p.lastPage
 	}
-	p.previousPage = page - 1
-	if p.previousPage < p.firstPage {
-		p.previousPage = p.firstPage
+	p.prevPage = page - 1
+	if p.prevPage < p.firstPage {
+		p.prevPage = p.firstPage
 	}
 	p.nextPage = page + 1
 	if p.nextPage > p.lastPage {
@@ -127,11 +127,11 @@ func (p *paginatorImpl) SetTotal(total int) error {
 	p.lastPage = ((total-1)/p.pageSize + 1)
 	if p.page > p.lastPage {
 		p.page = p.lastPage
-		p.previousPage = p.page - 1
+		p.prevPage = p.page - 1
 		p.nextPage = p.page + 1
 	}
-	if p.previousPage < p.firstPage {
-		p.previousPage = p.firstPage
+	if p.prevPage < p.firstPage {
+		p.prevPage = p.firstPage
 	}
 	if p.nextPage > p.lastPage {
 		p.nextPage = p.lastPage
@@ -154,11 +154,11 @@ func (p *paginatorImpl) SetPageSize(pageSize int) error {
 	p.lastPage = ((p.total-1)/pageSize + 1)
 	if p.page > p.lastPage {
 		p.page = p.lastPage
-		p.previousPage = p.page - 1
+		p.prevPage = p.page - 1
 		p.nextPage = p.page + 1
 	}
-	if p.previousPage < p.firstPage {
-		p.previousPage = p.firstPage
+	if p.prevPage < p.firstPage {
+		p.prevPage = p.firstPage
 	}
 	if p.nextPage > p.lastPage {
 		p.nextPage = p.lastPage

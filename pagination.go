@@ -62,8 +62,6 @@ import (
 	"strconv"
 )
 
-var defaultPageSize = 30
-
 type runInContext func(p Paginator) interface{}
 
 // Pagination instance
@@ -71,7 +69,11 @@ type Pagination interface {
 	Wrap(link string, r runInContext) Paginated
 }
 
-// PaginatorConfiguration defines the default pagination parameters
+var defaultPageSize = 30
+
+// PaginatorConfiguration defines the default pagination parameters. By default:
+//
+// -- PageSize: 30
 type PaginatorConfiguration struct {
 	PageSize int
 }
@@ -115,15 +117,15 @@ func parseQueries(u *url.URL) (getQueries func() (v, v, v, v, v), cleanPaginatio
 
 	cleanPaginationInQueries = func() {
 		q.Del("page")
-		q.Del("page_size")
+		q.Del("pageSize")
 		f.Del("page")
-		f.Del("page_size")
+		f.Del("pageSize")
 		l.Del("page")
-		l.Del("page_size")
+		l.Del("pageSize")
 		p.Del("page")
-		p.Del("page_size")
+		p.Del("pageSize")
 		n.Del("page")
-		n.Del("page_size")
+		n.Del("pageSize")
 	}
 
 	return
@@ -142,7 +144,7 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 		getQueries, cleanPaginationInQueries = parseQueries(parsedURL)
 	}
 
-	query, firstQuery, lastQuery, previousQuery, nextQuery := getQueries()
+	query, firstQuery, lastQuery, prevQuery, nextQuery := getQueries()
 
 	page := 0
 	queryPage := query.Get("page")
@@ -154,7 +156,7 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 	}
 
 	pageSize := 0
-	queryPageSize := query.Get("page_size")
+	queryPageSize := query.Get("pageSize")
 	if queryPageSize != "" {
 		pageSize, err = strconv.Atoi(queryPageSize)
 		if err != nil {
@@ -168,7 +170,7 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 		Query:           query,
 		FirstQuery:      firstQuery,
 		LastQuery:       lastQuery,
-		PreviousQuery:   previousQuery,
+		PrevQuery:       prevQuery,
 		NextQuery:       nextQuery,
 		defaultPageSize: p.defaultPaginatorConfiguration.PageSize,
 	}
@@ -179,28 +181,28 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 		result := run(&pgt)
 
 		pgt.Query.Set("page", strconv.Itoa(pgt.page))
-		pgt.Query.Set("page_size", strconv.Itoa(pgt.pageSize))
+		pgt.Query.Set("pageSize", strconv.Itoa(pgt.pageSize))
 
 		first := ""
 		pgt.FirstQuery.Set("page", strconv.Itoa(pgt.firstPage))
-		pgt.FirstQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
+		pgt.FirstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
 		first = basePath + "?" + pgt.FirstQuery.Encode()
 
 		last := ""
 		if pgt.lastPage != 0 {
 			pgt.LastQuery.Set("page", strconv.Itoa(pgt.lastPage))
-			pgt.LastQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
+			pgt.LastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
 			last = basePath + "?" + pgt.LastQuery.Encode()
 		}
 
-		previous := ""
-		pgt.PreviousQuery.Set("page", strconv.Itoa(pgt.previousPage))
-		pgt.PreviousQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
-		previous = basePath + "?" + pgt.PreviousQuery.Encode()
+		prev := ""
+		pgt.PrevQuery.Set("page", strconv.Itoa(pgt.prevPage))
+		pgt.PrevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		prev = basePath + "?" + pgt.PrevQuery.Encode()
 
 		next := ""
 		pgt.NextQuery.Set("page", strconv.Itoa(pgt.nextPage))
-		pgt.NextQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
+		pgt.NextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
 		next = basePath + "?" + pgt.NextQuery.Encode()
 
 		return Paginated{
@@ -210,7 +212,7 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 				Total:    pgt.total,
 				First:    first,
 				Last:     last,
-				Previous: previous,
+				Prev:     prev,
 				Next:     next,
 				Query:    pgt.Query,
 			},
