@@ -5,12 +5,16 @@ import (
 	"strconv"
 )
 
-type configure func(p Paginator)
+var defaultPageSize = 30
 
+type runInContext func(p Paginator) interface{}
+
+// Pagination instance
 type Pagination interface {
-	NewWrapper(link string, c configure) func(interface{}) Result
+	Wrap(link string, r runInContext) Paginated
 }
 
+// PaginatorConfiguration defines the default pagination parameters
 type PaginatorConfiguration struct {
 	PageSize int
 }
@@ -19,15 +23,21 @@ type pagination struct {
 	defaultPaginatorConfiguration PaginatorConfiguration
 }
 
+// DefaultPagination returns a default pagination instance
 func DefaultPagination() Pagination {
 	return &pagination{
 		defaultPaginatorConfiguration: PaginatorConfiguration{
-			PageSize: 30,
+			PageSize: defaultPageSize,
 		},
 	}
 }
 
+// NewPagination create a fresh pagination instance
 func NewPagination(cfg PaginatorConfiguration) Pagination {
+	if cfg.PageSize == 0 {
+		cfg.PageSize = defaultPageSize
+	}
+
 	return &pagination{
 		defaultPaginatorConfiguration: cfg,
 	}
@@ -62,17 +72,17 @@ func parseQueries(u *url.URL) (getQueries func() (v, v, v, v, v), cleanPaginatio
 	return
 }
 
-func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Result {
-	parsedUrl, err := url.Parse(link)
+func (p *pagination) Wrap(link string, run runInContext) Paginated {
+	parsedURL, err := url.Parse(link)
 	basePath := ""
 	var getQueries func() (v, v, v, v, v)
 	var cleanPaginationInQueries func()
 	if err == nil {
-		if parsedUrl.Scheme != "" {
-			basePath = parsedUrl.Scheme + "://"
+		if parsedURL.Scheme != "" {
+			basePath = parsedURL.Scheme + "://"
 		}
-		basePath = basePath + parsedUrl.Host + parsedUrl.Path
-		getQueries, cleanPaginationInQueries = parseQueries(parsedUrl)
+		basePath = basePath + parsedURL.Host + parsedURL.Path
+		getQueries, cleanPaginationInQueries = parseQueries(parsedURL)
 	}
 
 	query, firstQuery, lastQuery, previousQuery, nextQuery := getQueries()
@@ -108,8 +118,8 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 
 	pgt.SetIndicator(page, pageSize, 0)
 
-	return func(result interface{}) Result {
-		h(&pgt)
+	{
+		result := run(&pgt)
 
 		pgt.Query.Set("page", strconv.Itoa(pgt.page))
 		pgt.Query.Set("page_size", strconv.Itoa(pgt.pageSize))
@@ -136,7 +146,7 @@ func (p *pagination) NewWrapper(link string, h configure) func(interface{}) Resu
 		pgt.NextQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
 		next = basePath + "?" + pgt.NextQuery.Encode()
 
-		return Result{
+		return Paginated{
 			Pagination: PaginationSchema{
 				Page:     pgt.page,
 				PageSize: pgt.pageSize,

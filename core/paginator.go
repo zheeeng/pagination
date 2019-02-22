@@ -5,7 +5,10 @@ import (
 	"net/url"
 )
 
+// Paginator provides methods to manipulate pagination fields
 type Paginator interface {
+	Wrap(items interface{}) interface{}
+	WrapWithTruncate(func(startIndex, endIndex int) (items interface{})) interface{}
 	GetIndicator() (page, pageSize, total int)
 	SetIndicator(page, pageSize, total int) error
 	SetTotal(total int) error
@@ -26,6 +29,30 @@ type paginatorImpl struct {
 	lastPage        int
 	previousPage    int
 	nextPage        int
+}
+
+func (p *paginatorImpl) Wrap(items interface{}) interface{} {
+	return items
+}
+
+func (p *paginatorImpl) WrapWithTruncate(truncate func(startIndex, endIndex int) (items interface{})) interface{} {
+	page := p.page
+	pageSize := p.pageSize
+	total := p.total
+	offset := (page - 1) * pageSize
+
+	startIndex := 0
+	endIndex := 0
+
+	if total > offset+pageSize {
+		startIndex = offset
+		endIndex = pageSize + offset
+	} else if total-pageSize >= 0 {
+		startIndex = total - pageSize
+		endIndex = total
+	}
+
+	return truncate(startIndex, endIndex)
 }
 
 func (p *paginatorImpl) GetIndicator() (page, pageSize, total int) {

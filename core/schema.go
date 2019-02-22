@@ -2,6 +2,7 @@ package core
 
 import "net/url"
 
+// PaginationSchema defines the struct of pagination field
 type PaginationSchema struct {
 	Page     int        `json:"page"`
 	PageSize int        `json:"page_size"`
@@ -13,7 +14,8 @@ type PaginationSchema struct {
 	Query    url.Values `json:"query"`
 }
 
-type Result struct {
+// Paginated defines the paginated response struct
+type Paginated struct {
 	Pagination PaginationSchema `json:"pagination"`
 	Result     interface{}      `json:"result"`
 }
