@@ -54,14 +54,18 @@ func parseLink(link string, defaultPageSize int) (basePath string, page int, pag
 
 	if queryPage := queries.query.Get("page"); queryPage != "" {
 		if page, err = strconv.Atoi(queryPage); err != nil {
-			page = 0
+			page = 1
 		}
+	} else {
+		page = 1
 	}
 
 	if queryPageSize := queries.query.Get("pageSize"); queryPageSize != "" {
 		if pageSize, err = strconv.Atoi(queryPageSize); err != nil {
 			pageSize = defaultPageSize
 		}
+	} else {
+		pageSize = defaultPageSize
 	}
 
 	queries.CleanAllPaginations()
