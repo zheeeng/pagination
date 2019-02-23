@@ -8,6 +8,8 @@ import (
 )
 
 func ExamplePagination_wrapWithTruncate() {
+	// Truncate books automatically
+
 	pg := pagination.DefaultPagination()
 
 	paginatedData := pg.Wrap(
@@ -73,13 +75,17 @@ func ExamplePagination_wrapWithTruncate() {
 }
 
 func ExamplePagination_wrap() {
+	// Manually truncate books example
+
 	pg := pagination.DefaultPagination()
 
 	paginatedData := pg.Wrap(
 		requestURI,
 		func(pgt pagination.Paginator) pagination.WrappedItems {
 			pgt.SetTotal(total)
-			return pgt.Wrap(books)
+			startIndex, endIndex := pgt.GetPaginationRange()
+
+			return pgt.Wrap(books[startIndex:endIndex])
 		})
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
@@ -109,31 +115,6 @@ func ExamplePagination_wrap() {
 	//     },
 	//     "result": [
 	//         {
-	//             "id": 0,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 1,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 2,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 3,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 4,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
 	//             "id": 5,
 	//             "author": "jk",
 	//             "name": "book"
@@ -155,56 +136,6 @@ func ExamplePagination_wrap() {
 	//         },
 	//         {
 	//             "id": 9,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 10,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 11,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 12,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 13,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 14,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 15,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 16,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 17,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 18,
-	//             "author": "jk",
-	//             "name": "book"
-	//         },
-	//         {
-	//             "id": 19,
 	//             "author": "jk",
 	//             "name": "book"
 	//         }

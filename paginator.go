@@ -13,6 +13,9 @@ type WrappedItems interface{}
 type Paginator interface {
 	Wrap(items interface{}) WrappedItems
 	WrapWithTruncate(items interface{}) WrappedItems
+	GetPaginationRangeByPage(page int) (startIndex, endIndex int)
+	GetPaginationRangeByIndex(index int) (startIndex, endIndex int)
+	GetPaginationRange() (startIndex, endIndex int)
 	GetIndicator() (page, pageSize, total int)
 	SetIndicator(page, pageSize, total int) error
 	SetTotal(total int) error
@@ -44,13 +47,15 @@ func (p *paginatorImpl) WrapWithTruncate(items interface{}) WrappedItems {
 		return items
 	}
 
-	page := p.page
+	startIndex, endIndex := p.GetPaginationRange()
+
+	return reflect.ValueOf(items).Slice(startIndex, endIndex).Interface()
+}
+
+func (p *paginatorImpl) GetPaginationRangeByPage(page int) (startIndex, endIndex int) {
 	pageSize := p.pageSize
 	total := p.total
 	offset := (page - 1) * pageSize
-
-	startIndex := 0
-	endIndex := 0
 
 	if total > offset+pageSize {
 		startIndex = offset
@@ -60,7 +65,15 @@ func (p *paginatorImpl) WrapWithTruncate(items interface{}) WrappedItems {
 		endIndex = total
 	}
 
-	return reflect.ValueOf(items).Slice(startIndex, endIndex).Interface()
+	return
+}
+
+func (p *paginatorImpl) GetPaginationRangeByIndex(index int) (startIndex, endIndex int) {
+	return p.GetPaginationRangeByPage((index / p.pageSize) + 1)
+}
+
+func (p *paginatorImpl) GetPaginationRange() (startIndex, endIndex int) {
+	return p.GetPaginationRangeByPage(p.page)
 }
 
 func (p *paginatorImpl) GetIndicator() (page, pageSize, total int) {
