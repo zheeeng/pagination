@@ -61,7 +61,7 @@ import (
 	"strconv"
 )
 
-type runInContext func(p Paginator) interface{}
+type runInContext func(p Paginator) WrappedItems
 
 // Pagination instance
 type Pagination interface {

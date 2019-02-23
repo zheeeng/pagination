@@ -12,7 +12,7 @@ func ExamplePagination_wrapWithTruncate() {
 
 	paginatedData := pg.Wrap(
 		requestURI,
-		func(pgt pagination.Paginator) interface{} {
+		func(pgt pagination.Paginator) pagination.WrappedItems {
 			pgt.SetTotal(total)
 			return pgt.WrapWithTruncate(books)
 		})
@@ -77,7 +77,7 @@ func ExamplePagination_wrap() {
 
 	paginatedData := pg.Wrap(
 		requestURI,
-		func(pgt pagination.Paginator) interface{} {
+		func(pgt pagination.Paginator) pagination.WrappedItems {
 			pgt.SetTotal(total)
 			return pgt.Wrap(books)
 		})

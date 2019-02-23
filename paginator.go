@@ -5,10 +5,14 @@ import (
 	"reflect"
 )
 
+// WrappedItems is a nominal type for Pagination::Wrap func consuming.
+// It ensure user always call Paginator::Wrap or Paginator::WrapWithTruncate to return items
+type WrappedItems interface{}
+
 // Paginator provides methods to manipulate pagination fields
 type Paginator interface {
-	Wrap(items interface{}) interface{}
-	WrapWithTruncate(items interface{}) interface{}
+	Wrap(items interface{}) WrappedItems
+	WrapWithTruncate(items interface{}) WrappedItems
 	GetIndicator() (page, pageSize, total int)
 	SetIndicator(page, pageSize, total int) error
 	SetTotal(total int) error
@@ -27,11 +31,15 @@ type paginatorImpl struct {
 	nextPage        int
 }
 
-func (p *paginatorImpl) Wrap(items interface{}) interface{} {
+// Wrap is used for putting the input items to Result field of the Paginated struct.
+func (p *paginatorImpl) Wrap(items interface{}) WrappedItems {
 	return items
 }
 
-func (p *paginatorImpl) WrapWithTruncate(items interface{}) interface{} {
+// WrapWithTruncate does the same thing with Wrap,
+// and it truncates the input items by the pagination range.
+// It may cause a panic if items is not Slice kind
+func (p *paginatorImpl) WrapWithTruncate(items interface{}) WrappedItems {
 	if kind := reflect.TypeOf(items).Kind(); kind != reflect.Slice {
 		return items
 	}
