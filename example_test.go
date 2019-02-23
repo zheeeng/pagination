@@ -13,6 +13,12 @@ type Book struct {
 	Name   string `json:"name"`
 }
 
+type TrunctableBooks []Book
+
+func (tb TrunctableBooks) Slice(startIndex, endIndex int) pagination.Truncatable {
+	return tb[startIndex:endIndex]
+}
+
 var total = 20
 var requestURI = "api.example.com/books?author=jk&page=2&pageSize=5"
 var books = []Book{}
@@ -29,9 +35,9 @@ func Example() {
 
 	paginatedData := pg.Wrap(
 		requestURI,
-		func(pgt pagination.Paginator) pagination.WrappedItems {
+		func(pgt *pagination.Paginator) pagination.Truncatable {
 			pgt.SetTotal(total)
-			return pgt.WrapWithTruncate(books)
+			return pgt.WrapWithTruncate(TrunctableBooks(books))
 		})
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")

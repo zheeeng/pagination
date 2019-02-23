@@ -2,27 +2,16 @@ package pagination
 
 import (
 	"errors"
-	"reflect"
 )
 
-// WrappedItems is a nominal type for Pagination::Wrap func consuming.
+// Truncatable is a nominal type for Pagination::Wrap func consuming.
 // It ensure user always call Paginator::Wrap or Paginator::WrapWithTruncate to return items
-type WrappedItems interface{}
-
-// Paginator provides methods to manipulate pagination fields
-type Paginator interface {
-	Wrap(items interface{}) WrappedItems
-	WrapWithTruncate(items interface{}) WrappedItems
-	GetPaginationRangeByPage(page int) (startIndex, endIndex int)
-	GetPaginationRangeByIndex(index int) (startIndex, endIndex int)
-	GetPaginationRange() (startIndex, endIndex int)
-	GetIndicator() (page, pageSize, total int)
-	SetIndicator(page, pageSize, total int) error
-	SetTotal(total int) error
-	SetPageSize(pageSize int) error
+type Truncatable interface {
+	Slice(startIndex, endIndex int) Truncatable
 }
 
-type paginatorImpl struct {
+// Paginator provides methods to manipulate pagination fields
+type Paginator struct {
 	queries         paginationQueries
 	defaultPageSize int
 	page            int
@@ -35,24 +24,21 @@ type paginatorImpl struct {
 }
 
 // Wrap is used for putting the input items to Result field of the Paginated struct.
-func (p *paginatorImpl) Wrap(items interface{}) WrappedItems {
+func (p *Paginator) Wrap(items Truncatable) Truncatable {
 	return items
 }
 
 // WrapWithTruncate does the same thing with Wrap,
 // and it truncates the input items by the pagination range.
 // It may cause a panic if items is not Slice kind
-func (p *paginatorImpl) WrapWithTruncate(items interface{}) WrappedItems {
-	if kind := reflect.TypeOf(items).Kind(); kind != reflect.Slice {
-		return items
-	}
-
+func (p *Paginator) WrapWithTruncate(items Truncatable) Truncatable {
 	startIndex, endIndex := p.GetPaginationRange()
 
-	return reflect.ValueOf(items).Slice(startIndex, endIndex).Interface()
+	return items.Slice(startIndex, endIndex)
 }
 
-func (p *paginatorImpl) GetPaginationRangeByPage(page int) (startIndex, endIndex int) {
+// GetPaginationRangeByPage returns the corresponding start and end indices by a specific page number
+func (p *Paginator) GetPaginationRangeByPage(page int) (startIndex, endIndex int) {
 	pageSize := p.pageSize
 	total := p.total
 	offset := (page - 1) * pageSize
@@ -68,36 +54,41 @@ func (p *paginatorImpl) GetPaginationRangeByPage(page int) (startIndex, endIndex
 	return
 }
 
-func (p *paginatorImpl) GetPaginationRangeByIndex(index int) (startIndex, endIndex int) {
+// GetPaginationRangeByIndex returns the corresponding start and end indices by a specific item index number
+func (p *Paginator) GetPaginationRangeByIndex(index int) (startIndex, endIndex int) {
 	return p.GetPaginationRangeByPage((index / p.pageSize) + 1)
 }
 
-func (p *paginatorImpl) GetPaginationRange() (startIndex, endIndex int) {
+// GetPaginationRange returns the corresponding start and end indices by Paginator context
+func (p *Paginator) GetPaginationRange() (startIndex, endIndex int) {
 	return p.GetPaginationRangeByPage(p.page)
 }
 
-func (p *paginatorImpl) GetIndicator() (page, pageSize, total int) {
+// GetIndicator returns current page, pageSize, total in its context
+func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 	page = p.page
 	pageSize = p.pageSize
 	total = p.total
 	return
 }
 
-func (p *paginatorImpl) SetIndicator(page, pageSize, total int) error {
+// SetIndicator sets current page, pageSize, total, it checks the inputs validation
+func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 	if page < 0 {
 		return errors.New("page can't be a negative number")
-	}
-	if page == 0 {
-		page = 1
 	}
 	if pageSize < 0 {
 		return errors.New("pageSize can't be a negative number")
 	}
-	if pageSize == 0 {
-		pageSize = p.defaultPageSize
-	}
 	if total < 0 {
 		return errors.New("total can't be a negative number")
+	}
+
+	if page == 0 {
+		page = 1
+	}
+	if pageSize == 0 {
+		pageSize = p.defaultPageSize
 	}
 
 	if total == 0 {
@@ -133,7 +124,8 @@ func (p *paginatorImpl) SetIndicator(page, pageSize, total int) error {
 	return nil
 }
 
-func (p *paginatorImpl) SetTotal(total int) error {
+// SetTotal tells Paginator the total number of items
+func (p *Paginator) SetTotal(total int) error {
 	if total < 0 {
 		return errors.New("total can't be a negative number")
 	}
@@ -160,7 +152,9 @@ func (p *paginatorImpl) SetTotal(total int) error {
 	return nil
 }
 
-func (p *paginatorImpl) SetPageSize(pageSize int) error {
+// SetPageSize sets the pageSize of paginator,
+// by default this value have be parsed from link's query fields
+func (p *Paginator) SetPageSize(pageSize int) error {
 	if pageSize < 0 {
 		return errors.New("pageSize can't be a negative number")
 	}

@@ -17,5 +17,5 @@ type PageFields struct {
 // Paginated defines the paginated response struct
 type Paginated struct {
 	Pagination PageFields  `json:"pagination"`
-	Result     interface{} `json:"result"`
+	Result     Truncatable `json:"result"`
 }

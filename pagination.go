@@ -61,7 +61,7 @@ import (
 	"strconv"
 )
 
-type runInContext func(p Paginator) WrappedItems
+type runInContext func(p *Paginator) Truncatable
 
 // Pagination instance
 type Pagination interface {
@@ -104,14 +104,14 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 func (p *pagination) Wrap(link string, run runInContext) Paginated {
 	basePath, page, pageSize, queries := parseLink(link, p.paginatorConfiguration.PageSize)
 
-	pgt := paginatorImpl{
+	pgt := &Paginator{
 		queries:         queries,
 		defaultPageSize: p.paginatorConfiguration.PageSize,
 	}
 
 	pgt.SetIndicator(page, pageSize, 0)
 
-	result := run(&pgt)
+	result := run(pgt)
 
 	fields := PageFields{
 		Page:     pgt.page,
