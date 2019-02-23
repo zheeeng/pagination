@@ -22,7 +22,7 @@ var (
 // Paginator provides methods to manipulate pagination fields
 type Paginator struct {
 	queries         paginationQueries
-	defaultPageSize int
+	DefaultPageSize int
 	page            int
 	pageSize        int
 	total           int
@@ -97,7 +97,7 @@ func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 		page = 1
 	}
 	if pageSize == 0 {
-		pageSize = p.defaultPageSize
+		pageSize = p.DefaultPageSize
 	}
 
 	if total == 0 {
@@ -197,7 +197,7 @@ func (p *Paginator) SetPageSize(pageSize int) error {
 		return errors.New("pageSize can't be a negative number")
 	}
 	if pageSize == 0 {
-		pageSize = p.defaultPageSize
+		pageSize = p.DefaultPageSize
 	}
 
 	p.pageSize = pageSize

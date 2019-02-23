@@ -106,7 +106,7 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 
 	pgt := &Paginator{
 		queries:         queries,
-		defaultPageSize: p.paginatorConfiguration.PageSize,
+		DefaultPageSize: p.paginatorConfiguration.PageSize,
 	}
 
 	pgt.SetIndicator(page, pageSize, 0)
