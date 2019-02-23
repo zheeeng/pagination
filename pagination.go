@@ -111,40 +111,38 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 
 	pgt.SetIndicator(page, pageSize, 0)
 
-	{
-		result := run(&pgt)
+	result := run(&pgt)
 
-		fields := PageFields{
-			Page:     pgt.page,
-			PageSize: pgt.pageSize,
-			Total:    pgt.total,
-			Query:    pgt.queries.query,
-		}
+	fields := PageFields{
+		Page:     pgt.page,
+		PageSize: pgt.pageSize,
+		Total:    pgt.total,
+		Query:    pgt.queries.query,
+	}
 
-		pgt.queries.query.Set("page", strconv.Itoa(pgt.page))
-		pgt.queries.query.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	pgt.queries.query.Set("page", strconv.Itoa(pgt.page))
+	pgt.queries.query.Set("pageSize", strconv.Itoa(pgt.pageSize))
 
-		pgt.queries.firstQuery.Set("page", strconv.Itoa(pgt.firstPage))
-		pgt.queries.firstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		fields.First = basePath + "?" + pgt.queries.firstQuery.Encode()
+	pgt.queries.firstQuery.Set("page", strconv.Itoa(pgt.firstPage))
+	pgt.queries.firstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	fields.First = basePath + "?" + pgt.queries.firstQuery.Encode()
 
-		if pgt.lastPage != 0 {
-			pgt.queries.lastQuery.Set("page", strconv.Itoa(pgt.lastPage))
-			pgt.queries.lastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-			fields.Last = basePath + "?" + pgt.queries.lastQuery.Encode()
-		}
+	if pgt.lastPage != 0 {
+		pgt.queries.lastQuery.Set("page", strconv.Itoa(pgt.lastPage))
+		pgt.queries.lastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		fields.Last = basePath + "?" + pgt.queries.lastQuery.Encode()
+	}
 
-		pgt.queries.prevQuery.Set("page", strconv.Itoa(pgt.prevPage))
-		pgt.queries.prevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		fields.Prev = basePath + "?" + pgt.queries.prevQuery.Encode()
+	pgt.queries.prevQuery.Set("page", strconv.Itoa(pgt.prevPage))
+	pgt.queries.prevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	fields.Prev = basePath + "?" + pgt.queries.prevQuery.Encode()
 
-		pgt.queries.nextQuery.Set("page", strconv.Itoa(pgt.nextPage))
-		pgt.queries.nextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		fields.Next = basePath + "?" + pgt.queries.nextQuery.Encode()
+	pgt.queries.nextQuery.Set("page", strconv.Itoa(pgt.nextPage))
+	pgt.queries.nextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	fields.Next = basePath + "?" + pgt.queries.nextQuery.Encode()
 
-		return Paginated{
-			Pagination: fields,
-			Result:     result,
-		}
+	return Paginated{
+		Pagination: fields,
+		Result:     result,
 	}
 }
