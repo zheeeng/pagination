@@ -2,7 +2,6 @@ package pagination
 
 import (
 	"errors"
-	"net/url"
 )
 
 // Paginator provides methods to manipulate pagination fields
@@ -16,11 +15,7 @@ type Paginator interface {
 }
 
 type paginatorImpl struct {
-	Query           url.Values
-	FirstQuery      url.Values
-	LastQuery       url.Values
-	PrevQuery       url.Values
-	NextQuery       url.Values
+	queries         paginationQueries
 	defaultPageSize int
 	page            int
 	pageSize        int

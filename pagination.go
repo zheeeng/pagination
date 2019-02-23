@@ -58,7 +58,6 @@ Get details: https://github.com/zheeeng/pagination
 package pagination
 
 import (
-	"net/url"
 	"strconv"
 )
 
@@ -79,13 +78,13 @@ type PaginatorConfiguration struct {
 }
 
 type pagination struct {
-	defaultPaginatorConfiguration PaginatorConfiguration
+	paginatorConfiguration PaginatorConfiguration
 }
 
 // DefaultPagination returns a default pagination instance
 func DefaultPagination() Pagination {
 	return &pagination{
-		defaultPaginatorConfiguration: PaginatorConfiguration{
+		paginatorConfiguration: PaginatorConfiguration{
 			PageSize: defaultPageSize,
 		},
 	}
@@ -98,81 +97,16 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 	}
 
 	return &pagination{
-		defaultPaginatorConfiguration: cfg,
+		paginatorConfiguration: cfg,
 	}
-}
-
-type v = url.Values
-
-func parseQueries(u *url.URL) (getQueries func() (v, v, v, v, v), cleanPaginationInQueries func()) {
-	q := u.Query()
-	f := u.Query()
-	l := u.Query()
-	p := u.Query()
-	n := u.Query()
-
-	getQueries = func() (v, v, v, v, v) {
-		return q, f, l, p, n
-	}
-
-	cleanPaginationInQueries = func() {
-		q.Del("page")
-		q.Del("pageSize")
-		f.Del("page")
-		f.Del("pageSize")
-		l.Del("page")
-		l.Del("pageSize")
-		p.Del("page")
-		p.Del("pageSize")
-		n.Del("page")
-		n.Del("pageSize")
-	}
-
-	return
 }
 
 func (p *pagination) Wrap(link string, run runInContext) Paginated {
-	parsedURL, err := url.Parse(link)
-	basePath := ""
-	var getQueries func() (v, v, v, v, v)
-	var cleanPaginationInQueries func()
-	if err == nil {
-		if parsedURL.Scheme != "" {
-			basePath = parsedURL.Scheme + "://"
-		}
-		basePath = basePath + parsedURL.Host + parsedURL.Path
-		getQueries, cleanPaginationInQueries = parseQueries(parsedURL)
-	}
-
-	query, firstQuery, lastQuery, prevQuery, nextQuery := getQueries()
-
-	page := 0
-	queryPage := query.Get("page")
-	if queryPage != "" {
-		page, err = strconv.Atoi(queryPage)
-		if err != nil {
-			page = 0
-		}
-	}
-
-	pageSize := 0
-	queryPageSize := query.Get("pageSize")
-	if queryPageSize != "" {
-		pageSize, err = strconv.Atoi(queryPageSize)
-		if err != nil {
-			pageSize = p.defaultPaginatorConfiguration.PageSize
-		}
-	}
-
-	cleanPaginationInQueries()
+	basePath, page, pageSize, queries := parseLink(link, p.paginatorConfiguration.PageSize)
 
 	pgt := paginatorImpl{
-		Query:           query,
-		FirstQuery:      firstQuery,
-		LastQuery:       lastQuery,
-		PrevQuery:       prevQuery,
-		NextQuery:       nextQuery,
-		defaultPageSize: p.defaultPaginatorConfiguration.PageSize,
+		queries:         queries,
+		defaultPageSize: p.paginatorConfiguration.PageSize,
 	}
 
 	pgt.SetIndicator(page, pageSize, 0)
@@ -180,43 +114,37 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 	{
 		result := run(&pgt)
 
-		pgt.Query.Set("page", strconv.Itoa(pgt.page))
-		pgt.Query.Set("pageSize", strconv.Itoa(pgt.pageSize))
-
-		first := ""
-		pgt.FirstQuery.Set("page", strconv.Itoa(pgt.firstPage))
-		pgt.FirstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		first = basePath + "?" + pgt.FirstQuery.Encode()
-
-		last := ""
-		if pgt.lastPage != 0 {
-			pgt.LastQuery.Set("page", strconv.Itoa(pgt.lastPage))
-			pgt.LastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-			last = basePath + "?" + pgt.LastQuery.Encode()
+		fields := PageFields{
+			Page:     pgt.page,
+			PageSize: pgt.pageSize,
+			Total:    pgt.total,
+			Query:    pgt.queries.query,
 		}
 
-		prev := ""
-		pgt.PrevQuery.Set("page", strconv.Itoa(pgt.prevPage))
-		pgt.PrevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		prev = basePath + "?" + pgt.PrevQuery.Encode()
+		pgt.queries.query.Set("page", strconv.Itoa(pgt.page))
+		pgt.queries.query.Set("pageSize", strconv.Itoa(pgt.pageSize))
 
-		next := ""
-		pgt.NextQuery.Set("page", strconv.Itoa(pgt.nextPage))
-		pgt.NextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
-		next = basePath + "?" + pgt.NextQuery.Encode()
+		pgt.queries.firstQuery.Set("page", strconv.Itoa(pgt.firstPage))
+		pgt.queries.firstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		fields.First = basePath + "?" + pgt.queries.firstQuery.Encode()
+
+		if pgt.lastPage != 0 {
+			pgt.queries.lastQuery.Set("page", strconv.Itoa(pgt.lastPage))
+			pgt.queries.lastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+			fields.Last = basePath + "?" + pgt.queries.lastQuery.Encode()
+		}
+
+		pgt.queries.prevQuery.Set("page", strconv.Itoa(pgt.prevPage))
+		pgt.queries.prevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		fields.Prev = basePath + "?" + pgt.queries.prevQuery.Encode()
+
+		pgt.queries.nextQuery.Set("page", strconv.Itoa(pgt.nextPage))
+		pgt.queries.nextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		fields.Next = basePath + "?" + pgt.queries.nextQuery.Encode()
 
 		return Paginated{
-			Pagination: PageFields{
-				Page:     pgt.page,
-				PageSize: pgt.pageSize,
-				Total:    pgt.total,
-				First:    first,
-				Last:     last,
-				Prev:     prev,
-				Next:     next,
-				Query:    pgt.Query,
-			},
-			Result: result,
+			Pagination: fields,
+			Result:     result,
 		}
 	}
 }
