@@ -2,12 +2,13 @@ package pagination
 
 import (
 	"errors"
+	"reflect"
 )
 
 // Paginator provides methods to manipulate pagination fields
 type Paginator interface {
 	Wrap(items interface{}) interface{}
-	WrapWithTruncate(func(startIndex, endIndex int) (items interface{})) interface{}
+	WrapWithTruncate(items interface{}) interface{}
 	GetIndicator() (page, pageSize, total int)
 	SetIndicator(page, pageSize, total int) error
 	SetTotal(total int) error
@@ -30,7 +31,11 @@ func (p *paginatorImpl) Wrap(items interface{}) interface{} {
 	return items
 }
 
-func (p *paginatorImpl) WrapWithTruncate(truncate func(startIndex, endIndex int) (items interface{})) interface{} {
+func (p *paginatorImpl) WrapWithTruncate(items interface{}) interface{} {
+	if kind := reflect.TypeOf(items).Kind(); kind != reflect.Slice {
+		return items
+	}
+
 	page := p.page
 	pageSize := p.pageSize
 	total := p.total
@@ -47,7 +52,7 @@ func (p *paginatorImpl) WrapWithTruncate(truncate func(startIndex, endIndex int)
 		endIndex = total
 	}
 
-	return truncate(startIndex, endIndex)
+	return reflect.ValueOf(items).Slice(startIndex, endIndex).Interface()
 }
 
 func (p *paginatorImpl) GetIndicator() (page, pageSize, total int) {

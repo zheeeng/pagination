@@ -31,9 +31,7 @@ func Example() {
 		requestURI,
 		func(pgt pagination.Paginator) interface{} {
 			pgt.SetTotal(total)
-			return pgt.WrapWithTruncate(func(startIndex, endIndex int) interface{} {
-				return books[startIndex:endIndex]
-			})
+			return pgt.WrapWithTruncate(books)
 		})
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
