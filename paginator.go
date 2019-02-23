@@ -10,6 +10,15 @@ type Truncatable interface {
 	Slice(startIndex, endIndex int) Truncatable
 }
 
+var (
+	// ErrorNegativePage -- page can't be a negative number
+	ErrorNegativePage = errors.New("page can't be a negative number")
+	// ErrorNegativePageSize -- pageSize can't be a negative number
+	ErrorNegativePageSize = errors.New("pageSize can't be a negative number")
+	// ErrorNegativeTotal -- total can't be a negative number
+	ErrorNegativeTotal = errors.New("total can't be a negative number")
+)
+
 // Paginator provides methods to manipulate pagination fields
 type Paginator struct {
 	queries         paginationQueries
@@ -75,13 +84,13 @@ func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 // SetIndicator sets current page, pageSize, total, it checks the inputs validation
 func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 	if page < 0 {
-		return errors.New("page can't be a negative number")
+		return ErrorNegativePage
 	}
 	if pageSize < 0 {
-		return errors.New("pageSize can't be a negative number")
+		return ErrorNegativePageSize
 	}
 	if total < 0 {
-		return errors.New("total can't be a negative number")
+		return ErrorNegativeTotal
 	}
 
 	if page == 0 {
@@ -127,7 +136,7 @@ func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 // SetTotal tells Paginator the total number of items
 func (p *Paginator) SetTotal(total int) error {
 	if total < 0 {
-		return errors.New("total can't be a negative number")
+		return ErrorNegativeTotal
 	}
 
 	if total == 0 {
@@ -149,6 +158,35 @@ func (p *Paginator) SetTotal(total int) error {
 	if p.nextPage > p.lastPage {
 		p.nextPage = p.lastPage
 	}
+	return nil
+}
+
+// SetPage sets the page of paginator,
+// by default this value have be parsed from link's query fields
+func (p *Paginator) SetPage(page int) error {
+	if page < 0 {
+		return ErrorNegativePage
+	}
+	if page == 0 {
+		page = 1
+	}
+
+	p.page = page
+
+	if p.page > p.lastPage {
+		p.page = p.lastPage
+	}
+
+	p.prevPage = page - 1
+	if p.prevPage < p.firstPage {
+		p.prevPage = p.firstPage
+	}
+
+	p.nextPage = page + 1
+	if p.nextPage > p.lastPage {
+		p.nextPage = p.lastPage
+	}
+
 	return nil
 }
 
