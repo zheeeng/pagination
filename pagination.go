@@ -68,7 +68,7 @@ type Pagination interface {
 	Wrap(link string, r runInContext) Paginated
 }
 
-var defaultPageSize = 30
+const defaultPageSize = 30
 
 // PaginatorConfiguration defines the default pagination parameters. By default:
 //
