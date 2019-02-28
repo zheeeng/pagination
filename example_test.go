@@ -38,7 +38,8 @@ func Example() {
 		func(pgt *pagination.Paginator) pagination.Truncatable {
 			pgt.SetTotal(total)
 			return pgt.WrapWithTruncate(TrunctableBooks(books))
-		})
+		},
+	)
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
 
