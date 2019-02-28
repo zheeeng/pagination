@@ -11,12 +11,12 @@ type Truncatable interface {
 }
 
 var (
-	// ErrorNegativePage -- page can't be a negative number
-	ErrorNegativePage = errors.New("page can't be a negative number")
-	// ErrorNegativePageSize -- pageSize can't be a negative number
-	ErrorNegativePageSize = errors.New("pageSize can't be a negative number")
-	// ErrorNegativeTotal -- total can't be a negative number
-	ErrorNegativeTotal = errors.New("total can't be a negative number")
+	// ErrNegativePage -- page can't be a negative number
+	ErrNegativePage = errors.New("page can't be a negative number")
+	// ErrNegativePageSize -- pageSize can't be a negative number
+	ErrNegativePageSize = errors.New("pageSize can't be a negative number")
+	// ErrNegativeTotal -- total can't be a negative number
+	ErrNegativeTotal = errors.New("total can't be a negative number")
 )
 
 // Paginator provides methods to manipulate pagination fields
@@ -84,13 +84,13 @@ func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 // SetIndicator sets current page, pageSize, total, it checks the inputs validation
 func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 	if page < 0 {
-		return ErrorNegativePage
+		return ErrNegativePage
 	}
 	if pageSize < 0 {
-		return ErrorNegativePageSize
+		return ErrNegativePageSize
 	}
 	if total < 0 {
-		return ErrorNegativeTotal
+		return ErrNegativeTotal
 	}
 
 	if page == 0 {
@@ -136,7 +136,7 @@ func (p *Paginator) SetIndicator(page, pageSize, total int) error {
 // SetTotal tells Paginator the total number of items
 func (p *Paginator) SetTotal(total int) error {
 	if total < 0 {
-		return ErrorNegativeTotal
+		return ErrNegativeTotal
 	}
 
 	if total == 0 {
@@ -165,7 +165,7 @@ func (p *Paginator) SetTotal(total int) error {
 // by default this value have be parsed from link's query fields
 func (p *Paginator) SetPage(page int) error {
 	if page < 0 {
-		return ErrorNegativePage
+		return ErrNegativePage
 	}
 	if page == 0 {
 		page = 1
