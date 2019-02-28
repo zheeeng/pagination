@@ -87,7 +87,7 @@ func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 func (p *Paginator) HasRawPagination() bool {
 	// if link contains page, coz we assigned default page_size
 	// or if link contains page_size, we assigned default page 1,
-	// we think there has pagination infomation.
+	// we think there has a specificed pagination infomation.
 	return p.hasPage || p.hasPageSize
 }
 
