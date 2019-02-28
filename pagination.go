@@ -102,11 +102,13 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 }
 
 func (p *pagination) Wrap(link string, run runInContext) Paginated {
-	basePath, page, pageSize, queries := parseLink(link, p.paginatorConfiguration.PageSize)
+	basePath, page, pageSize, queries, hasPage, hasPageSize := parseLink(link, p.paginatorConfiguration.PageSize)
 
 	pgt := &Paginator{
 		queries:         queries,
 		DefaultPageSize: p.paginatorConfiguration.PageSize,
+		hasPage:         hasPage,
+		hasPageSize:     hasPageSize,
 	}
 
 	pgt.SetIndicator(page, pageSize, 0)

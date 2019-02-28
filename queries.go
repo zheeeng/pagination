@@ -38,7 +38,7 @@ func (q *paginationQueries) CleanAllPaginations() *paginationQueries {
 	return q
 }
 
-func parseLink(link string, defaultPageSize int) (basePath string, page int, pageSize int, queries paginationQueries) {
+func parseLink(link string, defaultPageSize int) (basePath string, page, pageSize int, queries paginationQueries, hasPage, hasPageSize bool) {
 	parsedURL, err := url.Parse(link)
 
 	if err != nil {
@@ -53,6 +53,7 @@ func parseLink(link string, defaultPageSize int) (basePath string, page int, pag
 	queries.InitPaginationQueries(parsedURL)
 
 	if queryPage := queries.query.Get("page"); queryPage != "" {
+		hasPage = true
 		if page, err = strconv.Atoi(queryPage); err != nil {
 			page = 1
 		}
@@ -61,6 +62,7 @@ func parseLink(link string, defaultPageSize int) (basePath string, page int, pag
 	}
 
 	if queryPageSize := queries.query.Get("pageSize"); queryPageSize != "" {
+		hasPageSize = true
 		if pageSize, err = strconv.Atoi(queryPageSize); err != nil {
 			pageSize = defaultPageSize
 		}

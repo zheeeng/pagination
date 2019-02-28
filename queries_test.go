@@ -16,34 +16,36 @@ func TestParseLink(t *testing.T) {
 			page         int
 			pageSize     int
 			queryEncoded string
+			hasPage      bool
+			hasPageSize  bool
 		}{
 			{"happy input", "api.example.com/books?author=jk&page=2&pageSize=5",
-				"api.example.com/books", 2, 5, "author=jk",
+				"api.example.com/books", 2, 5, "author=jk", true, true,
 			},
 			{"input with http scheme", "http://api.example.com/books?author=jk&page=2&pageSize=5",
-				"http://api.example.com/books", 2, 5, "author=jk",
+				"http://api.example.com/books", 2, 5, "author=jk", true, true,
 			},
 			{"input with https scheme", "https://api.example.com/books?author=jk&page=2&pageSize=5",
-				"https://api.example.com/books", 2, 5, "author=jk",
+				"https://api.example.com/books", 2, 5, "author=jk", true, true,
 			},
 			{"input without page", "api.example.com/books?author=jk&pageSize=5",
-				"api.example.com/books", 1, 5, "author=jk",
+				"api.example.com/books", 1, 5, "author=jk", false, true,
 			},
 			{"input without pageSize", "api.example.com/books?author=jk&page=2",
-				"api.example.com/books", 2, 30, "author=jk",
+				"api.example.com/books", 2, 30, "author=jk", true, false,
 			},
 			{"input without page and pageSize", "api.example.com/books?author=jk",
-				"api.example.com/books", 1, 30, "author=jk",
+				"api.example.com/books", 1, 30, "author=jk", false, false,
 			},
 			{"input with multiple query terms", "api.example.com/books?author=jk&name=heaven",
-				"api.example.com/books", 1, 30, "author=jk&name=heaven",
+				"api.example.com/books", 1, 30, "author=jk&name=heaven", false, false,
 			},
 		}
 
 		for _, test := range tests {
 			descr := fmt.Sprintf("\nTest %s failed:\n", test.testName)
 
-			basePath, page, pageSize, queries := parseLink(test.link, defaultPageSize)
+			basePath, page, pageSize, queries, hasPage, hasPageSize := parseLink(test.link, defaultPageSize)
 
 			if basePath != test.basePath {
 				t.Errorf("%s[basePath]: got %s, want %s", descr, basePath, test.basePath)
@@ -53,6 +55,12 @@ func TestParseLink(t *testing.T) {
 			}
 			if pageSize != test.pageSize {
 				t.Errorf("%s[pageSize]: got %d, want %d", descr, pageSize, test.pageSize)
+			}
+			if hasPage != test.hasPage {
+				t.Errorf("%s[hasPage]: got %v, want %v", descr, hasPage, test.hasPage)
+			}
+			if hasPageSize != test.hasPageSize {
+				t.Errorf("%s[hasPageSize]: got %v, want %v", descr, hasPageSize, test.hasPageSize)
 			}
 			if queries.query.Encode() != test.queryEncoded {
 				t.Errorf("%s[query encoded]: got %s, want %s", descr, queries.query.Encode(), test.queryEncoded)

@@ -30,6 +30,8 @@ type Paginator struct {
 	lastPage        int
 	prevPage        int
 	nextPage        int
+	hasPage         bool
+	hasPageSize     bool
 }
 
 // Wrap is used for putting the input items to Result field of the Paginated struct.
@@ -79,6 +81,21 @@ func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 	pageSize = p.pageSize
 	total = p.total
 	return
+}
+
+// HasRawPagination returns whether the test link contains pagination fields
+func (p *Paginator) HasRawPagination() bool {
+	return p.hasPage && p.hasPageSize
+}
+
+// HasRawPage returns whether the test link contains 'page' field
+func (p *Paginator) HasRawPage() bool {
+	return p.hasPage
+}
+
+// HasRawPageSize returns whether the test link contains 'page_size' field
+func (p *Paginator) HasRawPageSize() bool {
+	return p.hasPageSize
 }
 
 // SetIndicator sets current page, pageSize, total, it checks the inputs validation
