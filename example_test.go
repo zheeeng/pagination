@@ -20,7 +20,7 @@ func (tb TrunctableBooks) Slice(startIndex, endIndex int) pagination.Truncatable
 }
 
 var total = 20
-var requestURI = "api.example.com/books?author=jk&page=2&pageSize=5"
+var requestURI = "api.example.com/books?author=jk&page=2&page_size=5"
 var books = []Book{}
 
 func init() {

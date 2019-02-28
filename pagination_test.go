@@ -26,12 +26,12 @@ func ExamplePagination_wrapWithTruncate() {
 	// {
 	//     "pagination": {
 	//         "page": 2,
-	//         "pageSize": 5,
+	//         "page_size": 5,
 	//         "total": 20,
-	//         "first": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-	//         "last": "api.example.com/books?author=jk\u0026page=4\u0026pageSize=5",
-	//         "prev": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-	//         "next": "api.example.com/books?author=jk\u0026page=3\u0026pageSize=5",
+	//         "first": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+	//         "last": "api.example.com/books?author=jk\u0026page=4\u0026page_size=5",
+	//         "prev": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+	//         "next": "api.example.com/books?author=jk\u0026page=3\u0026page_size=5",
 	//         "query": {
 	//             "author": [
 	//                 "jk"
@@ -39,7 +39,7 @@ func ExamplePagination_wrapWithTruncate() {
 	//             "page": [
 	//                 "2"
 	//             ],
-	//             "pageSize": [
+	//             "page_size": [
 	//                 "5"
 	//             ]
 	//         }
@@ -95,12 +95,12 @@ func ExamplePagination_wrap() {
 	// {
 	//     "pagination": {
 	//         "page": 2,
-	//         "pageSize": 5,
+	//         "page_size": 5,
 	//         "total": 20,
-	//         "first": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-	//         "last": "api.example.com/books?author=jk\u0026page=4\u0026pageSize=5",
-	//         "prev": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-	//         "next": "api.example.com/books?author=jk\u0026page=3\u0026pageSize=5",
+	//         "first": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+	//         "last": "api.example.com/books?author=jk\u0026page=4\u0026page_size=5",
+	//         "prev": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+	//         "next": "api.example.com/books?author=jk\u0026page=3\u0026page_size=5",
 	//         "query": {
 	//             "author": [
 	//                 "jk"
@@ -108,7 +108,7 @@ func ExamplePagination_wrap() {
 	//             "page": [
 	//                 "2"
 	//             ],
-	//             "pageSize": [
+	//             "page_size": [
 	//                 "5"
 	//             ]
 	//         }

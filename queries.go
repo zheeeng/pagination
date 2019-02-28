@@ -25,15 +25,15 @@ func (q *paginationQueries) InitPaginationQueries(u *url.URL) *paginationQueries
 
 func (q *paginationQueries) CleanAllPaginations() *paginationQueries {
 	q.query.Del("page")
-	q.query.Del("pageSize")
+	q.query.Del("page_size")
 	q.firstQuery.Del("page")
-	q.firstQuery.Del("pageSize")
+	q.firstQuery.Del("page_size")
 	q.lastQuery.Del("page")
-	q.lastQuery.Del("pageSize")
+	q.lastQuery.Del("page_size")
 	q.prevQuery.Del("page")
-	q.prevQuery.Del("pageSize")
+	q.prevQuery.Del("page_size")
 	q.nextQuery.Del("page")
-	q.nextQuery.Del("pageSize")
+	q.nextQuery.Del("page_size")
 
 	return q
 }
@@ -61,7 +61,7 @@ func parseLink(link string, defaultPageSize int) (basePath string, page, pageSiz
 		page = 1
 	}
 
-	if queryPageSize := queries.query.Get("pageSize"); queryPageSize != "" {
+	if queryPageSize := queries.query.Get("page_size"); queryPageSize != "" {
 		hasPageSize = true
 		if pageSize, err = strconv.Atoi(queryPageSize); err != nil {
 			pageSize = defaultPageSize

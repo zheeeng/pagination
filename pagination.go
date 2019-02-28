@@ -6,12 +6,12 @@ Example output in JSON format:
     {
         "pagination": {
             "page": 2,
-            "pageSize": 5,
+            "page_size": 5,
             "total": 20,
-            "first": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-            "last": "api.example.com/books?author=jk\u0026page=4\u0026pageSize=5",
-            "prev": "api.example.com/books?author=jk\u0026page=1\u0026pageSize=5",
-            "next": "api.example.com/books?author=jk\u0026page=3\u0026pageSize=5",
+            "first": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+            "last": "api.example.com/books?author=jk\u0026page=4\u0026page_size=5",
+            "prev": "api.example.com/books?author=jk\u0026page=1\u0026page_size=5",
+            "next": "api.example.com/books?author=jk\u0026page=3\u0026page_size=5",
             "query": {
                 "author": [
                     "jk"
@@ -19,7 +19,7 @@ Example output in JSON format:
                 "page": [
                     "2"
                 ],
-                "pageSize": [
+                "page_size": [
                     "5"
                 ]
             }
@@ -123,24 +123,24 @@ func (p *pagination) Wrap(link string, run runInContext) Paginated {
 	}
 
 	pgt.queries.query.Set("page", strconv.Itoa(pgt.page))
-	pgt.queries.query.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	pgt.queries.query.Set("page_size", strconv.Itoa(pgt.pageSize))
 
 	pgt.queries.firstQuery.Set("page", strconv.Itoa(pgt.firstPage))
-	pgt.queries.firstQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	pgt.queries.firstQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
 	fields.First = basePath + "?" + pgt.queries.firstQuery.Encode()
 
 	if pgt.lastPage != 0 {
 		pgt.queries.lastQuery.Set("page", strconv.Itoa(pgt.lastPage))
-		pgt.queries.lastQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+		pgt.queries.lastQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
 		fields.Last = basePath + "?" + pgt.queries.lastQuery.Encode()
 	}
 
 	pgt.queries.prevQuery.Set("page", strconv.Itoa(pgt.prevPage))
-	pgt.queries.prevQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	pgt.queries.prevQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
 	fields.Prev = basePath + "?" + pgt.queries.prevQuery.Encode()
 
 	pgt.queries.nextQuery.Set("page", strconv.Itoa(pgt.nextPage))
-	pgt.queries.nextQuery.Set("pageSize", strconv.Itoa(pgt.pageSize))
+	pgt.queries.nextQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
 	fields.Next = basePath + "?" + pgt.queries.nextQuery.Encode()
 
 	return Paginated{
