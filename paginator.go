@@ -85,7 +85,10 @@ func (p *Paginator) GetIndicator() (page, pageSize, total int) {
 
 // HasRawPagination returns whether the test link contains pagination fields
 func (p *Paginator) HasRawPagination() bool {
-	return p.hasPage && p.hasPageSize
+	// if link contains page, coz we assigned default page_size
+	// or if link contains page_size, we assigned default page 1,
+	// we think there has pagination infomation.
+	return p.hasPage || p.hasPageSize
 }
 
 // HasRawPage returns whether the test link contains 'page' field
