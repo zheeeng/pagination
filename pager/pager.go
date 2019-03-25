@@ -3,6 +3,7 @@ package pager
 // Pager provides basic calculations
 // if total is greater than, page is restrict to a range between 0 and maxpage
 type Pager struct {
+	total    int
 	page     int
 	pageSize int
 }
@@ -40,6 +41,11 @@ func divCeil(a, b int) int {
 	return d
 }
 
+//NewPager returns Pager instance
+func NewPager(page, pageSize int) Pager {
+	return Pager{0, page, pageSize}
+}
+
 // getDefaultNavigation returns navigation info when missing total value
 func (p *Pager) getDefaultNavigation() Navigation {
 	return Navigation{
@@ -53,16 +59,22 @@ func (p *Pager) getDefaultNavigation() Navigation {
 	}
 }
 
+// SetTotal sets total value for pager
+func (p *Pager) SetTotal(total int) *Pager {
+	p.total = total
+	return p
+}
+
 // GetNavigation returns navigation info
-func (p *Pager) GetNavigation(total int) Navigation {
-	if total <= 0 {
+func (p *Pager) GetNavigation() Navigation {
+	if p.total <= 0 {
 		return p.getDefaultNavigation()
 	}
 
-	last := divCeil(total, p.pageSize)
+	last := divCeil(p.total, p.pageSize)
 
 	return Navigation{
-		Total:    total,
+		Total:    p.total,
 		Page:     p.page,
 		PageSize: p.pageSize,
 		First:    1,
@@ -72,8 +84,8 @@ func (p *Pager) GetNavigation(total int) Navigation {
 	}
 }
 
-func (p *Pager) getRange(total int) (start, end int) {
-	offset, length := p.GetOffsetRange(total)
+func (p *Pager) getRange() (start, end int) {
+	offset, length := p.GetOffsetRange()
 	start = offset
 	end = offset + length
 
@@ -81,13 +93,13 @@ func (p *Pager) getRange(total int) (start, end int) {
 }
 
 // GetOffsetRange returns start and end offsets of items
-func (p *Pager) GetOffsetRange(total int) (offset, length int) {
+func (p *Pager) GetOffsetRange() (offset, length int) {
 	offset = (p.page - 1) * p.pageSize
 	length = p.pageSize
 
-	if total > 0 {
-		offset = compact(0, total, offset)
-		length = compact(0, total-offset, length)
+	if p.total > 0 {
+		offset = compact(0, p.total, offset)
+		length = compact(0, p.total-offset, length)
 	}
 
 	return
