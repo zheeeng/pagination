@@ -1,5 +1,9 @@
 package pager
 
+import (
+	"math"
+)
+
 // Pager provides basic calculations
 // if total is greater than, page is restrict to a range between 0 and maxpage
 type Pager struct {
@@ -43,7 +47,7 @@ func divCeil(a, b int) int {
 
 //NewPager returns Pager instance
 func NewPager(page, pageSize int) *Pager {
-	return &Pager{0, page, pageSize}
+	return &Pager{0, compact(1, math.MaxInt32, page), compact(1, math.MaxInt32, pageSize)}
 }
 
 // getDefaultNavigation returns navigation info when missing total value
@@ -52,10 +56,10 @@ func (p *Pager) getDefaultNavigation() Navigation {
 		Total:    0,
 		Page:     p.page,
 		PageSize: p.pageSize,
-		First:    0,
+		First:    1,
 		Last:     0,
-		Prev:     0,
-		Next:     0,
+		Prev:     compact(1, math.MaxInt32, p.page-1),
+		Next:     compact(1, math.MaxInt32, p.page+1),
 	}
 }
 
@@ -72,7 +76,7 @@ func (p *Pager) ClonePager(page, pageSize int) *Pager {
 
 // ClonePagerWithCursor returns a fresh pager with specified cursor value and pageSize
 func (p *Pager) ClonePagerWithCursor(cursor, pageSize int) *Pager {
-	return &Pager{p.total, cursor / pageSize, pageSize}
+	return &Pager{p.total, compact(1, math.MaxInt32, cursor/pageSize), compact(1, math.MaxInt32, pageSize)}
 }
 
 // GetNavigation returns navigation info

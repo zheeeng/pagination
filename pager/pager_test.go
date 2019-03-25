@@ -63,16 +63,28 @@ func TestPager(t *testing.T) {
 		navigation            Navigation
 	}{
 		{
-			"default(total is zero value)",
+			"total is zero value",
 			5, 10, 0,
 			40, 50,
-			Navigation{0, 5, 10, 0, 0, 0, 0},
+			Navigation{0, 5, 10, 1, 0, 4, 6},
 		},
 		{
-			"default(total value is below 0)",
+			"total value is below 0",
 			5, 10, -1,
 			40, 50,
-			Navigation{0, 5, 10, 0, 0, 0, 0},
+			Navigation{0, 5, 10, 1, 0, 4, 6},
+		},
+		{
+			"total is zero value, page in zero value",
+			0, 10, 0,
+			0, 10,
+			Navigation{0, 1, 10, 1, 0, 1, 2},
+		},
+		{
+			"total is zero value, page is the lowest bound value",
+			1, 10, 0,
+			0, 10,
+			Navigation{0, 1, 10, 1, 0, 1, 2},
 		},
 		{
 			"basic",
