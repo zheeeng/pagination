@@ -42,8 +42,8 @@ func divCeil(a, b int) int {
 }
 
 //NewPager returns Pager instance
-func NewPager(page, pageSize int) Pager {
-	return Pager{0, page, pageSize}
+func NewPager(page, pageSize int) *Pager {
+	return &Pager{0, page, pageSize}
 }
 
 // getDefaultNavigation returns navigation info when missing total value
@@ -63,6 +63,11 @@ func (p *Pager) getDefaultNavigation() Navigation {
 func (p *Pager) SetTotal(total int) *Pager {
 	p.total = total
 	return p
+}
+
+// ClonePager returns a fresh pager with specified page and pageSize
+func (p *Pager) ClonePager(page, pageSize int) *Pager {
+	return &Pager{p.total, page, pageSize}
 }
 
 // GetNavigation returns navigation info
