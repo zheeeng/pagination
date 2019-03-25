@@ -58,14 +58,14 @@ Get details: https://github.com/zheeeng/pagination
 package pagination
 
 import (
-	"strconv"
+	"github.com/zheeeng/pagination/pager"
 )
 
 type runInContext func(p *Paginator) Truncatable
 
 // Pagination instance
 type Pagination interface {
-	Wrap(link string, r runInContext) Paginated
+	// Wrap(link string, r runInContext) Paginated
 }
 
 const defaultPageSize = 30
@@ -101,50 +101,17 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 	}
 }
 
-func (p *pagination) Wrap(link string, run runInContext) Paginated {
+func (p *pagination) Parse(link string) *Paginator {
 	basePath, page, pageSize, queries, hasPage, hasPageSize := parseLink(link, p.paginatorConfiguration.PageSize)
 
 	pgt := &Paginator{
+		pager:           pager.NewPager(page, pageSize),
+		basePath:        basePath,
 		queries:         queries,
 		DefaultPageSize: p.paginatorConfiguration.PageSize,
 		hasPage:         hasPage,
 		hasPageSize:     hasPageSize,
 	}
 
-	pgt.SetIndicator(page, pageSize, 0)
-
-	result := run(pgt)
-
-	fields := PageFields{
-		Page:     pgt.page,
-		PageSize: pgt.pageSize,
-		Total:    pgt.total,
-		Query:    pgt.queries.query,
-	}
-
-	pgt.queries.query.Set("page", strconv.Itoa(pgt.page))
-	pgt.queries.query.Set("page_size", strconv.Itoa(pgt.pageSize))
-
-	pgt.queries.firstQuery.Set("page", strconv.Itoa(pgt.firstPage))
-	pgt.queries.firstQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
-	fields.First = basePath + "?" + pgt.queries.firstQuery.Encode()
-
-	if pgt.lastPage != 0 {
-		pgt.queries.lastQuery.Set("page", strconv.Itoa(pgt.lastPage))
-		pgt.queries.lastQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
-		fields.Last = basePath + "?" + pgt.queries.lastQuery.Encode()
-	}
-
-	pgt.queries.prevQuery.Set("page", strconv.Itoa(pgt.prevPage))
-	pgt.queries.prevQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
-	fields.Prev = basePath + "?" + pgt.queries.prevQuery.Encode()
-
-	pgt.queries.nextQuery.Set("page", strconv.Itoa(pgt.nextPage))
-	pgt.queries.nextQuery.Set("page_size", strconv.Itoa(pgt.pageSize))
-	fields.Next = basePath + "?" + pgt.queries.nextQuery.Encode()
-
-	return Paginated{
-		Pagination: fields,
-		Result:     result,
-	}
+	return pgt
 }
