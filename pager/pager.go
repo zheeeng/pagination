@@ -70,6 +70,11 @@ func (p *Pager) ClonePager(page, pageSize int) *Pager {
 	return &Pager{p.total, page, pageSize}
 }
 
+// ClonePagerWithCursor returns a fresh pager with specified cursor value and pageSize
+func (p *Pager) ClonePagerWithCursor(cursor, pageSize int) *Pager {
+	return &Pager{p.total, cursor / pageSize, pageSize}
+}
+
 // GetNavigation returns navigation info
 func (p *Pager) GetNavigation() Navigation {
 	if p.total <= 0 {
