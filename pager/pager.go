@@ -98,7 +98,8 @@ func (p *Pager) GetNavigation() Navigation {
 	}
 }
 
-func (p *Pager) getRange() (start, end int) {
+// GetRange returns the start and end offset values
+func (p *Pager) GetRange() (start, end int) {
 	offset, length := p.GetOffsetRange()
 	start = offset
 	end = offset + length

@@ -114,7 +114,7 @@ func TestPager(t *testing.T) {
 		pager.SetTotal(test.total)
 
 		navigation := pager.GetNavigation()
-		start, end := pager.getRange()
+		start, end := pager.GetRange()
 
 		if navigation != test.navigation {
 			t.Errorf("%s[navigation] output doesn't match expected, `pager` is %v, `total` is %d, expects `navigation` is %v, got %v",
