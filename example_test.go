@@ -18,6 +18,9 @@ type TrunctableBooks []Book
 func (tb TrunctableBooks) Slice(startIndex, endIndex int) pagination.Truncatable {
 	return tb[startIndex:endIndex]
 }
+func (tb TrunctableBooks) Len() int {
+	return len(tb)
+}
 
 var total = 20
 var requestURI = "api.example.com/books?author=jk&page=2&page_size=5"
@@ -33,13 +36,9 @@ func init() {
 func Example() {
 	pg := pagination.DefaultPagination()
 
-	paginatedData := pg.Wrap(
-		requestURI,
-		func(pgt *pagination.Paginator) pagination.Truncatable {
-			pgt.SetTotal(total)
-			return pgt.WrapWithTruncate(TrunctableBooks(books))
-		},
-	)
+	pgt := pg.Parse(requestURI)
+
+	paginatedData := pgt.WrapWithTruncate(TrunctableBooks(books), total)
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
 

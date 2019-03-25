@@ -65,7 +65,7 @@ type runInContext func(p *Paginator) Truncatable
 
 // Pagination instance
 type Pagination interface {
-	// Wrap(link string, r runInContext) Paginated
+	Parse(link string) *Paginator
 }
 
 const defaultPageSize = 30

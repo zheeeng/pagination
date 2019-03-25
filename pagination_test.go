@@ -12,12 +12,9 @@ func ExamplePagination_wrapWithTruncate() {
 
 	pg := pagination.DefaultPagination()
 
-	paginatedData := pg.Wrap(
-		requestURI,
-		func(pgt *pagination.Paginator) pagination.Truncatable {
-			pgt.SetTotal(total)
-			return pgt.WrapWithTruncate(TrunctableBooks(books))
-		})
+	pgt := pg.Parse(requestURI)
+
+	paginatedData := pgt.WrapWithTruncate(TrunctableBooks(books), total)
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
 
@@ -79,14 +76,11 @@ func ExamplePagination_wrap() {
 
 	pg := pagination.DefaultPagination()
 
-	paginatedData := pg.Wrap(
-		requestURI,
-		func(pgt *pagination.Paginator) pagination.Truncatable {
-			pgt.SetTotal(total)
-			startIndex, endIndex := pgt.GetPaginationRange()
+	pgt := pg.Parse(requestURI)
 
-			return pgt.Wrap(TrunctableBooks(books[startIndex:endIndex]))
-		})
+	start, end := pgt.GetRange()
+
+	paginatedData := pgt.Wrap(TrunctableBooks(books[start:end]), total)
 
 	responseBody, _ := json.MarshalIndent(paginatedData, "", "    ")
 
