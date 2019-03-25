@@ -2,6 +2,7 @@ package pager
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 )
 
@@ -125,6 +126,19 @@ func TestPager(t *testing.T) {
 			t.Errorf("%s[start, end offsets] output doesn't match expected, `pager` is %v, `total` is %d, expects (`start`, `end`) is (%d, %d), got (%d, %d)",
 				desc, pager, test.total, test.start, test.end, start, end,
 			)
+		}
+
+		if i < (len(tests) / 2) {
+			nextTestCase := tests[i+1]
+			colonedNextPager := pager.ClonePager(nextTestCase.page, nextTestCase.pageSize)
+			colonedNextPager2 := pager.ClonePagerWithCursor(
+				nextTestCase.page*nextTestCase.pageSize-rand.Intn(nextTestCase.pageSize),
+				nextTestCase.pageSize,
+			)
+			nextPager := NewPager(nextTestCase.page, nextTestCase.pageSize)
+			if *colonedNextPager != *nextPager || *colonedNextPager2 != *nextPager {
+				t.Errorf("%s[Clone failed], expect %v, got colonedNextPager: %v, colonedNextPager1: %v", desc, nextPager, colonedNextPager, colonedNextPager2)
+			}
 		}
 	}
 

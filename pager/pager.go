@@ -71,12 +71,12 @@ func (p *Pager) SetTotal(total int) *Pager {
 
 // ClonePager returns a fresh pager with specified page and pageSize
 func (p *Pager) ClonePager(page, pageSize int) *Pager {
-	return &Pager{p.total, page, pageSize}
+	return &Pager{compact(0, math.MaxInt32, p.total), compact(1, math.MaxInt32, page), compact(1, math.MaxInt32, pageSize)}
 }
 
 // ClonePagerWithCursor returns a fresh pager with specified cursor value and pageSize
 func (p *Pager) ClonePagerWithCursor(cursor, pageSize int) *Pager {
-	return &Pager{p.total, compact(1, math.MaxInt32, cursor/pageSize), compact(1, math.MaxInt32, pageSize)}
+	return p.ClonePager(divCeil(cursor, pageSize), pageSize)
 }
 
 // GetNavigation returns navigation info
