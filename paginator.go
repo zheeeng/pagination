@@ -60,6 +60,7 @@ func (p *Paginator) buildFields() *PageFields {
 
 // Wrap is used for putting the input items to Result field of the Paginated struct.
 func (p *Paginator) Wrap(items Truncatable, total int) Paginated {
+	p.pager.SetTotal(total)
 	fields := p.buildFields()
 
 	return Paginated{
@@ -72,11 +73,12 @@ func (p *Paginator) Wrap(items Truncatable, total int) Paginated {
 // and it truncates the input items by the pagination range.
 // It may cause a panic if items is not Slice kind
 func (p *Paginator) WrapWithTruncate(items Truncatable, total int) Paginated {
+	p.pager.SetTotal(total)
 	fields := p.buildFields()
 
 	length := items.Len()
 
-	startIndex, endIndex := p.pager.GetRange()
+	startIndex, endIndex := p.GetRange()
 
 	if endIndex > length {
 		endIndex = length
@@ -86,6 +88,16 @@ func (p *Paginator) WrapWithTruncate(items Truncatable, total int) Paginated {
 		Pagination: fields,
 		Result:     items.Slice(startIndex, endIndex),
 	}
+}
+
+// GetRangeByIndex returns the corresponding start and end offsets by a specific item index number
+func (p *Paginator) GetRangeByIndex(index int) (start, end int) {
+	return p.pager.ClonePagerWithCursor(index, p.pager.GetNavigation().PageSize).GetRange()
+}
+
+// GetRange returns the corresponding start and end offsets by Paginator context
+func (p *Paginator) GetRange() (start, end int) {
+	return p.pager.GetRange()
 }
 
 // GetOffsetRangeByIndex returns the corresponding offset and range length by a specific item index number
@@ -119,11 +131,4 @@ func (p *Paginator) HasRawPage() bool {
 // HasRawPageSize returns whether the test link contains 'page_size' field
 func (p *Paginator) HasRawPageSize() bool {
 	return p.hasPageSize
-}
-
-// SetTotal tells Paginator the total number of items
-func (p *Paginator) SetTotal(total int) error {
-	p.pager.SetTotal(total)
-
-	return nil
 }
