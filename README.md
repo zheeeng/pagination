@@ -4,8 +4,9 @@
 A pagination wrapper for decorating resource list response.
 
 ![Greenkeeper](https://badges.greenkeeper.io/zheeeng/pagination.svg)
-![CircleCI](https://img.shields.io/circleci/project/github/zheeeng/pagination/master.svg)
-![Language](https://img.shields.io/badge/lang-go-71e1ff.svg)
+![CircleCI](https://img.shields.io/circleci/project/github/zheeeng/pagination/master.svg?label=tests)
+![Coverage Status](https://coveralls.io/repos/github/zheeeng/pagination/badge.svg)
+![Language](https://img.shields.io/github/languages/top/zheeeng/pagination.svg?color=71e1ff)
 ![GitHub tag](https://img.shields.io/github/tag/zheeeng/pagination.svg)
 ![GitHub](https://img.shields.io/github/license/zheeeng/pagination.svg)
 </div>
