@@ -98,6 +98,13 @@ func (p *Paginator) Query() url.Values {
 	return p.queries.Query
 }
 
+// SetPageSize resets a new pageSize to pager
+func (p *Paginator) SetPageSize(pageSize int) *Paginator {
+	p.pager.SetPageSize(pageSize)
+
+	return p
+}
+
 // GetRangeByIndex returns the corresponding start and end offsets by a specific item index number
 func (p *Paginator) GetRangeByIndex(index int) (start, end int) {
 	return p.pager.ClonePagerWithCursor(index, p.pager.GetNavigation().PageSize).GetRange()

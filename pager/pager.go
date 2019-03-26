@@ -63,9 +63,15 @@ func (p *Pager) getDefaultNavigation() Navigation {
 	}
 }
 
-// SetTotal sets total value for pager
+// SetTotal sets total value to pager
 func (p *Pager) SetTotal(total int) *Pager {
 	p.total = total
+	return p
+}
+
+// SetPageSize resets a new pageSize to pager
+func (p *Pager) SetPageSize(pageSize int) *Pager {
+	p.pageSize = pageSize
 	return p
 }
 
