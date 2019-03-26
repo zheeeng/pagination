@@ -1,6 +1,7 @@
 package pagination
 
 import (
+	"net/url"
 	"strconv"
 
 	"github.com/zheeeng/pagination/pager"
@@ -90,6 +91,11 @@ func (p *Paginator) WrapWithTruncate(items Truncatable, total int) Paginated {
 		Pagination: fields,
 		Result:     items.Slice(startIndex, endIndex),
 	}
+}
+
+// Query returns queries manipulation interface
+func (p *Paginator) Query() url.Values {
+	return p.queries.Query
 }
 
 // GetRangeByIndex returns the corresponding start and end offsets by a specific item index number
