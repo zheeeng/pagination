@@ -17,13 +17,32 @@ Get document at: https://godoc.org/github.com/zheeeng/pagination
     - Feedback page navigation: `page`, `page_size`, `total`
     - Feedback hyper links: `first`, `last`, `prev`, `next`
     - Feedback query pairs
-3. Manipulate pagination info
+3. Get calculated valuable pagination params:
+    - Get whether the URI provided pagination info
+    - Calculate the offset and the chunk length
+    - Calculate the start and end offsets, for manually truncate the list by yourself
+    - Calculate values above from your specified page or item index
+4. Manipulate pagination info
     - Modify quires
     - Reset pageSize, if you
-4. Truncate resource list by demands
+5. Truncate resource list by demands
     - If the list length is greater than pageSize
-5. Config default params
+6. Config default params
     - Change the default pageSize
+
+## :bulb: Note
+
+This pagination wrapper requires the resource list to be implemented with `Trunctable` interface. e.g.
+```go
+type TrunctableBooks []Book
+
+func (tb TrunctableBooks) Slice(startIndex, endIndex int) pagination.Truncatable {
+	return tb[startIndex:endIndex]
+}
+func (tb TrunctableBooks) Len() int {
+	return len(tb)
+}
+```
 
 ## Example :point_down:
 
@@ -74,5 +93,56 @@ func Example() {
 
 	fmt.Println(string(responseBody))
 }
+```
 
+## Usage :point_down:
+
+**Init default pagination configuration:**
+```go
+pg := pagination.DefaultPagination()
+```
+
+```go
+pg := pagination.NewPagination(PaginatorConfiguration{
+    PageSize: 50,
+})
+```
+
+**Parse URI and get a paginator instance:**
+```go
+pgt := pg.Parse(someURI)
+
+```
+
+**Get/set page information**
+```go
+offset, length := pgt.GetOffsetRange()
+
+total, items := db.Offset(offset).Limit(length).Query()
+```
+
+```go
+start, end := pgt.GetRange()
+
+total, items := db.QueryAll()
+items = items[start:end]
+```
+
+```go
+// Put all items into one page
+if !pgt.HasRawPagination() {
+    total, items := db.QueryAll()
+    pgt.SetPageInfo(1, total)
+}
+```
+
+**Wrap your list**
+
+```go
+response := pgt.Wrap(TruncatableItems(partialItems), total)
+```
+
+```go
+// WrapWithTruncate helps truncating the list
+response := pgt.WrapWithTruncate(TruncatableItems(allItems), total)
 ```
