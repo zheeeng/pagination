@@ -69,9 +69,10 @@ func (p *Pager) SetTotal(total int) *Pager {
 	return p
 }
 
-// SetPageSize resets a new pageSize to pager
-func (p *Pager) SetPageSize(pageSize int) *Pager {
-	p.pageSize = pageSize
+// SetPageInfo resets page and pageSize to pager
+func (p *Pager) SetPageInfo(page, pageSize int) *Pager {
+	p.page = compact(1, math.MaxInt32, page)
+	p.pageSize = compact(1, math.MaxInt32, pageSize)
 	return p
 }
 

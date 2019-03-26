@@ -98,9 +98,9 @@ func (p *Paginator) Query() url.Values {
 	return p.queries.Query
 }
 
-// SetPageSize resets a new pageSize to pager
-func (p *Paginator) SetPageSize(pageSize int) *Paginator {
-	p.pager.SetPageSize(pageSize)
+// SetPageInfo resets page and pageSize to pager
+func (p *Paginator) SetPageInfo(page, pageSize int) *Paginator {
+	p.pager.SetPageInfo(page, pageSize)
 
 	return p
 }
