@@ -59,6 +59,7 @@ package pagination
 
 import (
 	"github.com/zheeeng/pagination/pager"
+	"github.com/zheeeng/pagination/queries"
 )
 
 type runInContext func(p *Paginator) Truncatable
@@ -102,13 +103,13 @@ func NewPagination(cfg PaginatorConfiguration) Pagination {
 }
 
 func (p *pagination) Parse(link string) *Paginator {
-	basePath, page, pageSize, queries, hasPage, hasPageSize := parseLink(link, p.paginatorConfiguration.PageSize)
+	basePath, page, pageSize, queries, hasPage, hasPageSize := queries.ParseLink(link, p.paginatorConfiguration.PageSize)
 
 	pgt := &Paginator{
 		pager:           pager.NewPager(page, pageSize),
 		basePath:        basePath,
 		queries:         queries,
-		DefaultPageSize: p.paginatorConfiguration.PageSize,
+		defaultPageSize: p.paginatorConfiguration.PageSize,
 		hasPage:         hasPage,
 		hasPageSize:     hasPageSize,
 	}

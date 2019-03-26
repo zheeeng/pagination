@@ -1,4 +1,4 @@
-package pagination
+package queries
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func TestParseLink(t *testing.T) {
 		for _, test := range tests {
 			descr := fmt.Sprintf("\nTest %s failed:\n", test.testName)
 
-			basePath, page, pageSize, queries, hasPage, hasPageSize := parseLink(test.link, defaultPageSize)
+			basePath, page, pageSize, queries, hasPage, hasPageSize := ParseLink(test.link, defaultPageSize)
 
 			if basePath != test.basePath {
 				t.Errorf("%s[basePath]: got %s, want %s", descr, basePath, test.basePath)
@@ -62,12 +62,17 @@ func TestParseLink(t *testing.T) {
 			if hasPageSize != test.hasPageSize {
 				t.Errorf("%s[hasPageSize]: got %v, want %v", descr, hasPageSize, test.hasPageSize)
 			}
-			if queries.query.Encode() != test.queryEncoded {
-				t.Errorf("%s[query encoded]: got %s, want %s", descr, queries.query.Encode(), test.queryEncoded)
+			if queries.Query.Encode() != test.queryEncoded {
+				t.Errorf("%s[query encoded]: got %s, want %s", descr, queries.Query.Encode(), test.queryEncoded)
 			}
 
-			queryBase := queries.query.Encode()
-			queryTests := []string{queries.firstQuery.Encode(), queries.lastQuery.Encode(), queries.nextQuery.Encode(), queries.firstQuery.Encode()}
+			queryBase := queries.Query.Encode()
+			queryTests := []string{
+				queries.FirstQuery.Encode(),
+				queries.LastQuery.Encode(),
+				queries.NextQuery.Encode(),
+				queries.FirstQuery.Encode(),
+			}
 			for _, q := range queryTests {
 				if q != queryBase {
 					t.Errorf("%s[all queries are same]: got (%s != %s), want (%[2]s == %[3]s)", descr, queryBase, q)

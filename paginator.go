@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/zheeeng/pagination/pager"
+	"github.com/zheeeng/pagination/queries"
 )
 
 // Truncatable is used for feeding Paginator::Wrap and Paginator::WrapWithTruncate, to wrap items into paginated result
@@ -19,41 +20,42 @@ type Indicator = pager.Navigation
 type Paginator struct {
 	pager           *pager.Pager
 	basePath        string
-	queries         paginationQueries
-	DefaultPageSize int
+	queries         queries.PaginationQueries
+	defaultPageSize int
 	hasPage         bool
 	hasPageSize     bool
 }
 
 func (p *Paginator) buildFields() *PageFields {
 	nav := p.pager.GetNavigation()
+
 	fields := &PageFields{
 		Page:     nav.Page,
 		PageSize: nav.PageSize,
 		Total:    nav.Total,
-		Query:    p.queries.query,
+		Query:    p.queries.Query,
 	}
 
-	p.queries.query.Set("page", strconv.Itoa(nav.Page))
-	p.queries.query.Set("page_size", strconv.Itoa(nav.PageSize))
+	p.queries.Query.Set("page", strconv.Itoa(nav.Page))
+	p.queries.Query.Set("page_size", strconv.Itoa(nav.PageSize))
 
-	p.queries.firstQuery.Set("page", strconv.Itoa(nav.First))
-	p.queries.firstQuery.Set("page_size", strconv.Itoa(nav.PageSize))
-	fields.First = p.basePath + "?" + p.queries.firstQuery.Encode()
+	p.queries.FirstQuery.Set("page", strconv.Itoa(nav.First))
+	p.queries.FirstQuery.Set("page_size", strconv.Itoa(nav.PageSize))
+	fields.First = p.basePath + "?" + p.queries.FirstQuery.Encode()
 
 	if nav.Last > 0 {
-		p.queries.lastQuery.Set("page", strconv.Itoa(nav.Last))
-		p.queries.lastQuery.Set("page_size", strconv.Itoa(nav.PageSize))
-		fields.Last = p.basePath + "?" + p.queries.lastQuery.Encode()
+		p.queries.LastQuery.Set("page", strconv.Itoa(nav.Last))
+		p.queries.LastQuery.Set("page_size", strconv.Itoa(nav.PageSize))
+		fields.Last = p.basePath + "?" + p.queries.LastQuery.Encode()
 	}
 
-	p.queries.prevQuery.Set("page", strconv.Itoa(nav.Prev))
-	p.queries.prevQuery.Set("page_size", strconv.Itoa(nav.PageSize))
-	fields.Prev = p.basePath + "?" + p.queries.prevQuery.Encode()
+	p.queries.PrevQuery.Set("page", strconv.Itoa(nav.Prev))
+	p.queries.PrevQuery.Set("page_size", strconv.Itoa(nav.PageSize))
+	fields.Prev = p.basePath + "?" + p.queries.PrevQuery.Encode()
 
-	p.queries.nextQuery.Set("page", strconv.Itoa(nav.Next))
-	p.queries.nextQuery.Set("page_size", strconv.Itoa(nav.PageSize))
-	fields.Next = p.basePath + "?" + p.queries.nextQuery.Encode()
+	p.queries.NextQuery.Set("page", strconv.Itoa(nav.Next))
+	p.queries.NextQuery.Set("page_size", strconv.Itoa(nav.PageSize))
+	fields.Next = p.basePath + "?" + p.queries.NextQuery.Encode()
 
 	return fields
 }
