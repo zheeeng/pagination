@@ -14,9 +14,6 @@ type Truncatable interface {
 	Slice(startIndex, endIndex int) Truncatable
 }
 
-// Indicator contains pagination information, e.g. page, pageSize, total, first, last...
-type Indicator = pager.Navigation
-
 // Paginator provides methods to manipulate pagination fields
 type Paginator struct {
 	pager           *pager.Pager
@@ -126,7 +123,7 @@ func (p *Paginator) GetOffsetRange() (offset, length int) {
 }
 
 // GetIndicator returns current page, pageSize, total and tother info in its context
-func (p *Paginator) GetIndicator() Indicator {
+func (p *Paginator) GetIndicator() pager.Navigation {
 	return p.pager.GetNavigation()
 }
 
