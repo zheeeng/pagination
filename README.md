@@ -1,11 +1,14 @@
-# pagination
-A pagination wrapper for decorating resource list response.
+<h1 align="center">:star: pagination</h1>
 
-# Go doc
+<div align="center">
+A pagination wrapper for decorating resource list response.
+</div>
+
+## :paperclip: Go doc
 
 Get document at: https://godoc.org/github.com/zheeeng/pagination
 
-# Features
+## :fire: Features
 
 1. Parse pagination info from request uri
     - Extract page and page size
@@ -22,7 +25,7 @@ Get document at: https://godoc.org/github.com/zheeeng/pagination
 5. Config default params
     - Change the default pageSize
 
-# Example
+## Example :point_down:
 
 ```go
 package pagination_test
