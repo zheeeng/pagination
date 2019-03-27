@@ -17,10 +17,10 @@ Get document at: https://godoc.org/github.com/zheeeng/pagination
 
 ## :fire: Features
 
-1. Parse pagination info from request uri
+1. Parse pagination info from request URI:
     - Extract page and page size
     - Extract quires and feed them to paginated response
-2. Decorate response body with pagination info
+2. Decorate response body with pagination info:
     - Feedback page navigation: `page`, `page_size`, `total`
     - Feedback hyper links: `first`, `last`, `prev`, `next`
     - Feedback query pairs
@@ -29,13 +29,13 @@ Get document at: https://godoc.org/github.com/zheeeng/pagination
     - Calculate the offset and the chunk length
     - Calculate the start and end offsets, for manually truncate the list by yourself
     - Calculate values above from your specified page or item index
-4. Manipulate pagination info
+4. Manipulate pagination info:
     - Modify quires
-    - Reset pageSize, if you
-5. Truncate resource list by demands
+    - Reset page and pageSize, maybe sometimes you want to overwrite them
+5. Truncate resource list by demands:
     - If the list length is greater than pageSize
-6. Config default params
-    - Change the default pageSize
+6. Config default params:
+    - Change the default page size
 
 ## :bulb: Note
 
