@@ -4,11 +4,11 @@
 
 A pagination wrapper for decorating resource list response.
 
-![CircleCI](https://img.shields.io/circleci/project/github/zheeeng/pagination/master.svg?label=tests)
+[![CircleCI](https://img.shields.io/circleci/project/github/zheeeng/pagination/master.svg?label=tests)](https://circleci.com/gh/zheeeng/pagination)
 [![Coverage Status](https://coveralls.io/repos/github/zheeeng/pagination/badge.svg)](https://circleci.com/api/v1.1/project/github/zheeeng/pagination/latest/artifacts/0/tmp/artifacts/coverage.html)
-![Language](https://img.shields.io/github/languages/top/zheeeng/pagination.svg?color=71e1ff)
-![GitHub tag](https://img.shields.io/github/tag/zheeeng/pagination.svg)
-![GitHub](https://img.shields.io/github/license/zheeeng/pagination.svg)
+[![Language](https://img.shields.io/github/languages/top/zheeeng/pagination.svg?color=71e1ff)](https://golang.org/)
+[![GitHub tag](https://img.shields.io/github/tag/zheeeng/pagination.svg)](https://github.com/zheeeng/pagination/releases)
+[![GitHub](https://img.shields.io/github/license/zheeeng/pagination.svg)](https://github.com/zheeeng/pagination/blob/master/LICENSE)
 </div>
 
 ## :paperclip: Go doc
