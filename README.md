@@ -153,3 +153,57 @@ response := pgt.Wrap(TruncatableItems(partialItems), total)
 // WrapWithTruncate helps truncating the list
 response := pgt.WrapWithTruncate(TruncatableItems(allItems), total)
 ```
+
+## Sample output :point_down:
+
+```json
+{
+    "pagination": {
+        "page": 2,
+        "page_size": 5,
+        "total": 20,
+        "first": "api.example.com/books?author=jk&page=1&page_size=5",
+        "last": "api.example.com/books?author=jk&page=4&page_size=5",
+        "prev": "api.example.com/books?author=jk&page=1&page_size=5",
+        "next": "api.example.com/books?author=jk&page=3&page_size=5",
+        "query": {
+            "author": [
+                "jk"
+            ],
+            "page": [
+                "2"
+            ],
+            "page_size": [
+                "5"
+            ]
+        }
+    },
+    "result": [
+        {
+            "id": 5,
+            "author": "jk",
+            "name": "book"
+        },
+        {
+            "id": 6,
+            "author": "jk",
+            "name": "book"
+        },
+        {
+            "id": 7,
+            "author": "jk",
+            "name": "book"
+        },
+        {
+            "id": 8,
+            "author": "jk",
+            "name": "book"
+        },
+        {
+            "id": 9,
+            "author": "jk",
+            "name": "book"
+        }
+    ]
+}
+```
