@@ -5,6 +5,35 @@ import (
 	"testing"
 )
 
+func TestParseLinkFail(t *testing.T) {
+	defaultPageSize := 30
+	var testLinks = []string{":::", ":", "::/..", "::/.", "::\\"}
+
+	for i, testLink := range testLinks {
+		basePath, page, pageSize, queries, hasPage, hasPageSize := ParseLink(testLink, defaultPageSize)
+
+		if basePath != "" ||
+			page != 0 || pageSize != 0 ||
+			len(queries.FirstQuery) != 0 ||
+			len(queries.LastQuery) != 0 ||
+			len(queries.PrevQuery) != 0 ||
+			len(queries.NextQuery) != 0 ||
+			hasPage != false || hasPageSize != false {
+			t.Errorf(
+				"%d. invalid test link `%s` should be parsed to zero values result. got\npage: %d, pageSize: %d\nfirstQuery: %s, lastQuery: %s, prevQuery: %s, nextQuery: %s\nhasPage: %v, hasPageSize: %v",
+				i, testLink,
+				page, pageSize,
+				queries.FirstQuery.Encode(),
+				queries.LastQuery.Encode(),
+				queries.PrevQuery.Encode(),
+				queries.NextQuery.Encode(),
+				hasPage, hasPageSize,
+			)
+		}
+	}
+
+}
+
 func TestParseLink(t *testing.T) {
 	defaultPageSize := 30
 
@@ -31,7 +60,13 @@ func TestParseLink(t *testing.T) {
 			{"input without page", "api.example.com/books?author=jk&page_size=5",
 				"api.example.com/books", 1, 5, "author=jk", false, true,
 			},
+			{"input with invalid page", "api.example.com/books?author=jk&page=foo&page_size=5",
+				"api.example.com/books", 1, 5, "author=jk", false, true,
+			},
 			{"input without page_size", "api.example.com/books?author=jk&page=2",
+				"api.example.com/books", 2, 30, "author=jk", true, false,
+			},
+			{"input with invalid page_size", "api.example.com/books?author=jk&page=2&page_size=bar",
 				"api.example.com/books", 2, 30, "author=jk", true, false,
 			},
 			{"input without page and page_size", "api.example.com/books?author=jk",
@@ -42,8 +77,8 @@ func TestParseLink(t *testing.T) {
 			},
 		}
 
-		for _, test := range tests {
-			descr := fmt.Sprintf("\nTest %s failed:\n", test.testName)
+		for i, test := range tests {
+			descr := fmt.Sprintf("\n%d. Test %s failed:\n", i, test.testName)
 
 			basePath, page, pageSize, queries, hasPage, hasPageSize := ParseLink(test.link, defaultPageSize)
 

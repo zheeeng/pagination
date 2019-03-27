@@ -161,7 +161,7 @@ func TestSetPageInfoAndClonePager(t *testing.T) {
 		if clonedPager.total != pager.total ||
 			clonedPager.page != toComparePager.page ||
 			clonedPager.pageSize != toComparePager.pageSize {
-			t.Errorf("%d. [Clone failed], got clonedPager: %v,", i, clonedPager)
+			t.Errorf("%d. [Clone failed], got clonedPager: %v", i, clonedPager)
 		}
 		if clonedPager2.total != pager.total ||
 			clonedPager2.page != toComparePager.page ||
@@ -170,7 +170,7 @@ func TestSetPageInfoAndClonePager(t *testing.T) {
 		}
 		if pager.page != toComparePager.page ||
 			pager.pageSize != toComparePager.pageSize {
-			t.Errorf("%d .[SetPageInfo failed], got resetted page: %v,", i, pager)
+			t.Errorf("%d .[SetPageInfo failed], got resetted page: %v", i, pager)
 
 		}
 	}
