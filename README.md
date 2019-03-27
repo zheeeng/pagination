@@ -62,7 +62,7 @@ func (tb TrunctableBooks) Len() int {
 
 ## Usage :point_down:
 
-**Init default pagination configuration:**
+**Init a pagination instance:**
 ```go
 pg := pagination.DefaultPagination()
 ```
@@ -73,7 +73,7 @@ pg := pagination.NewPagination(PaginatorConfiguration{
 })
 ```
 
-**Parse URI and get a paginator instance:**
+**Parse URI and get a manipulable paginator**
 ```go
 pgt := pg.Parse(someURI)
 
@@ -99,6 +99,20 @@ if !pgt.HasRawPagination() {
     total, items := db.QueryAll()
     pgt.SetPageInfo(1, total)
 }
+```
+
+**Manipulate queries**
+
+```go
+// got url.Values
+query := pgt.Query()
+if query.Get("publisher") == "" {
+	query.Add("publisher", "Tada Publications")
+}
+if query.Get("author") == "Fisher" {
+	query.Set("author", "F.isher")
+}
+schema.Parse(query.Encode(), &someQueryBookStruct)
 ```
 
 **Wrap your list**
