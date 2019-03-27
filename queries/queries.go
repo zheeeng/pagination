@@ -60,18 +60,20 @@ func ParseLink(link string, defaultPageSize int) (
 	queries.initPaginationQueries(parsedURL)
 
 	if queryPage := queries.Query.Get("page"); queryPage != "" {
-		hasPage = true
 		if page, err = strconv.Atoi(queryPage); err != nil {
 			page = 1
+		} else {
+			hasPage = true
 		}
 	} else {
 		page = 1
 	}
 
 	if queryPageSize := queries.Query.Get("page_size"); queryPageSize != "" {
-		hasPageSize = true
 		if pageSize, err = strconv.Atoi(queryPageSize); err != nil {
 			pageSize = defaultPageSize
+		} else {
+			hasPageSize = true
 		}
 	} else {
 		pageSize = defaultPageSize
