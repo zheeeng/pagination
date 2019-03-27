@@ -127,18 +127,51 @@ func TestPager(t *testing.T) {
 				desc, pager, test.total, test.start, test.end, start, end,
 			)
 		}
+	}
 
-		if i < (len(tests) / 2) {
-			nextTestCase := tests[i+1]
-			colonedNextPager := pager.ClonePager(nextTestCase.page, nextTestCase.pageSize)
-			colonedNextPager2 := pager.ClonePagerWithCursor(
-				nextTestCase.page*nextTestCase.pageSize-rand.Intn(nextTestCase.pageSize),
-				nextTestCase.pageSize,
-			)
-			nextPager := NewPager(nextTestCase.page, nextTestCase.pageSize)
-			if *colonedNextPager != *nextPager || *colonedNextPager2 != *nextPager {
-				t.Errorf("%s[Clone failed], expect %v, got colonedNextPager: %v, colonedNextPager1: %v", desc, nextPager, colonedNextPager, colonedNextPager2)
-			}
+}
+
+func TestSetPageInfoAndClonePager(t *testing.T) {
+	tests := []struct {
+		fromPage, fromPageSize, fromTotal int
+		toPage, toPageSize, toTotal       int
+	}{
+		{5, 10, 0, 5, 10, -1},
+		{5, 10, -1, 0, 10, 0},
+		{0, 10, 0, 1, 10, 0},
+		{1, 10, 0, 5, 10, 100},
+		{5, 10, 100, 5, 10, 50},
+		{5, 10, 50, 5, 10, 49},
+	}
+
+	for i, test := range tests {
+		pager := NewPager(test.fromPage, test.fromPageSize)
+		pager.SetTotal(test.fromTotal)
+
+		toComparePager := NewPager(test.toPage, test.toPageSize)
+
+		clonedPager := pager.ClonePager(test.toPage, test.toPageSize)
+		clonedPager2 := pager.ClonePagerWithCursor(
+			test.toPage*test.toPageSize-rand.Intn(test.toPageSize),
+			test.toPageSize,
+		)
+
+		pager.SetPageInfo(test.toPage, test.toPageSize)
+
+		if clonedPager.total != pager.total ||
+			clonedPager.page != toComparePager.page ||
+			clonedPager.pageSize != toComparePager.pageSize {
+			t.Errorf("%d. [Clone failed], got clonedPager: %v,", i, clonedPager)
+		}
+		if clonedPager2.total != pager.total ||
+			clonedPager2.page != toComparePager.page ||
+			clonedPager2.pageSize != toComparePager.pageSize {
+			t.Errorf("%d .[Clone from cursor failed], got colonedPager2: %v", i, clonedPager2)
+		}
+		if pager.page != toComparePager.page ||
+			pager.pageSize != toComparePager.pageSize {
+			t.Errorf("%d .[SetPageInfo failed], got resetted page: %v,", i, pager)
+
 		}
 	}
 
